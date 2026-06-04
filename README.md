@@ -74,10 +74,17 @@ dist
 Set this Vercel environment variable:
 
 ```bash
-VITE_API_BASE_URL=https://<your-render-backend>.onrender.com
+VITE_API_BASE_URL=https://api.ankojh.com
 ```
 
 Do not set `VITE_DEV_PROXY_TARGET` in Vercel. That variable is only for local Vite/Compose proxying.
+
+Recommended Vercel domains:
+
+```text
+Primary:  ankojh.com
+Redirect: www.ankojh.com -> ankojh.com
+```
 
 ### Render Backend
 
