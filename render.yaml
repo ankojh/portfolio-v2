@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: portfolio-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -e .
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_VERSION
+        value: 0.1.0
+      - key: CORS_ORIGINS
+        value: https://ankojh.com,https://www.ankojh.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: portfolio-postgres
+          property: connectionString
+
+databases:
+  - name: portfolio-postgres
+    databaseName: portfolio
+    user: portfolio
