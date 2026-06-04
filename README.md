@@ -58,7 +58,18 @@ The repo stays as a monorepo, but each host builds only its own app.
 
 ### Vercel Frontend
 
-Use the repo root as the Vercel project root. [vercel.json](/Users/ankojh/b12/portfolio-v2/vercel.json) builds `frontend/` and serves `frontend/dist`.
+Use `frontend/` as the Vercel project root directory. Vercel should run from inside `frontend/`, so the commands are:
+
+```bash
+npm install
+npm run build
+```
+
+The output directory is:
+
+```bash
+dist
+```
 
 Set this Vercel environment variable:
 
