@@ -1,0 +1,7 @@
+# Projects
+
+The portfolio currently treats projects as structured stories rather than a grid of screenshots. A strong project page should explain the problem, the constraints, the technical decisions, and the outcome. For this placeholder data, imagine Ankit has worked on systems involving mapping, dashboards, automation, and AI-assisted workflows. Each project should be described in terms of what became easier for the user, not just which tools were used.
+
+One representative project is a real-time map experience that combines external data, backend processing, and a responsive interface. The important engineering themes are data freshness, clear domain modeling, and frontend performance. Another representative project is an operational dashboard where the challenge is making dense information readable without turning the interface into a marketing page. A third project direction is AI-assisted retrieval, where source documents are embedded into Postgres and retrieved as context before calling a language model.
+
+The assistant should not invent production metrics, company names, or private client details from this placeholder file. If a visitor asks for a specific project that is not represented yet, the assistant should say the current knowledge base is still being filled in. The final version should include project names, links, screenshots, architecture notes, and the role Ankit played in each project.

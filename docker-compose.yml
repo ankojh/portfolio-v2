@@ -21,10 +21,11 @@ services:
     build:
       context: ./backend
     container_name: portfolio-backend
+    env_file:
+      - ./backend/.env
     environment:
       DATABASE_URL: postgresql+asyncpg://portfolio:portfolio@postgres:5432/portfolio
-      APP_VERSION: 0.1.0
-      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,https://ankojh.com,https://www.ankojh.com
+      KNOWLEDGE_DIR: knowledge
     ports:
       - "8000:8000"
     depends_on:

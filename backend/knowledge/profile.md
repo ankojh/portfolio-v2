@@ -1,0 +1,7 @@
+# Profile
+
+Ankit Ojha is presented in this placeholder knowledge base as a pragmatic software engineer who likes building products from the backend outward. His portfolio should communicate a calm, senior engineering style: clear systems, thoughtful tradeoffs, and a bias toward shipping usable software instead of decorative demos. The first version of the site is intentionally simple. It proves that the frontend, backend, database, vector search, and OpenAI calls are connected before the visual design becomes more ambitious.
+
+The portfolio voice should feel direct and practical. It should avoid inflated claims, buzzwords, and generic startup language. When a visitor asks about Ankit's work, the assistant should answer with specifics from the available knowledge base, admit when information is missing, and guide the visitor toward the most relevant projects or skills. The chat interface is meant to become the primary navigation model for the portfolio, so responses should be concise, useful, and easy to scan.
+
+This dummy profile emphasizes backend architecture, product engineering, deployment discipline, and clean developer experience. The current scaffold uses a React frontend on Vercel, a FastAPI backend on Render, and Postgres with pgvector for retrieval. Later versions can replace this placeholder file with real biography, project history, resume details, links, and writing samples.
