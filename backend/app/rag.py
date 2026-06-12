@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 from openai import AsyncOpenAI
 from sqlalchemy import text
@@ -61,56 +62,105 @@ def load_knowledge_chunks(settings: Settings) -> list[KnowledgeChunk]:
     return chunks
 
 
-async def reindex_knowledge(session: AsyncSession, settings: Settings) -> dict[str, int]:
-    client = get_openai_client(settings)
-    chunks = load_knowledge_chunks(settings)
+async def sync_knowledge(
+    session: AsyncSession,
+    settings: Settings,
+    *,
+    force: bool = False,
+) -> dict[str, int]:
+    """Make the indexed chunks match the knowledge files.
 
-    await session.execute(
-        text("DELETE FROM knowledge_chunks WHERE embedding_model = :embedding_model"),
+    Only embeds chunks whose content changed (keyed by content_hash) and drops
+    chunks that no longer exist, so repeated runs with unchanged knowledge make
+    zero OpenAI calls. Pass ``force=True`` to re-embed everything from scratch.
+    """
+
+    chunks = load_knowledge_chunks(settings)
+    current = {_chunk_hash(chunk): chunk for chunk in chunks}
+
+    existing_result = await session.execute(
+        text(
+            "SELECT content_hash FROM knowledge_chunks WHERE embedding_model = :embedding_model"
+        ),
         {"embedding_model": settings.openai_embedding_model},
     )
+    existing_hashes = {row.content_hash for row in existing_result}
 
-    for chunk in chunks:
-        embedding = await create_embedding(client, settings, chunk.content)
+    if force:
+        hashes_to_insert = set(current)
+        hashes_to_delete = set(existing_hashes)
+    else:
+        hashes_to_insert = set(current) - existing_hashes
+        hashes_to_delete = existing_hashes - set(current)
+
+    if hashes_to_delete:
         await session.execute(
             text(
                 """
-                INSERT INTO knowledge_chunks (
-                    source_path,
-                    title,
-                    chunk_index,
-                    content,
-                    content_hash,
-                    embedding,
-                    embedding_model
-                )
-                VALUES (
-                    :source_path,
-                    :title,
-                    :chunk_index,
-                    :content,
-                    :content_hash,
-                    CAST(:embedding AS vector),
-                    :embedding_model
-                )
+                DELETE FROM knowledge_chunks
+                WHERE embedding_model = :embedding_model
+                  AND content_hash = ANY(:hashes)
                 """
             ),
             {
-                "source_path": chunk.source_path,
-                "title": chunk.title,
-                "chunk_index": chunk.chunk_index,
-                "content": chunk.content,
-                "content_hash": _chunk_hash(chunk),
-                "embedding": _vector_literal(embedding),
                 "embedding_model": settings.openai_embedding_model,
+                "hashes": list(hashes_to_delete),
             },
         )
+
+    if hashes_to_insert:
+        client = get_openai_client(settings)
+        for content_hash in hashes_to_insert:
+            chunk = current[content_hash]
+            embedding = await create_embedding(client, settings, chunk.content)
+            await session.execute(
+                text(
+                    """
+                    INSERT INTO knowledge_chunks (
+                        source_path,
+                        title,
+                        chunk_index,
+                        content,
+                        content_hash,
+                        embedding,
+                        embedding_model
+                    )
+                    VALUES (
+                        :source_path,
+                        :title,
+                        :chunk_index,
+                        :content,
+                        :content_hash,
+                        CAST(:embedding AS vector),
+                        :embedding_model
+                    )
+                    ON CONFLICT (content_hash, embedding_model) DO NOTHING
+                    """
+                ),
+                {
+                    "source_path": chunk.source_path,
+                    "title": chunk.title,
+                    "chunk_index": chunk.chunk_index,
+                    "content": chunk.content,
+                    "content_hash": content_hash,
+                    "embedding": vector_literal(embedding),
+                    "embedding_model": settings.openai_embedding_model,
+                },
+            )
 
     await session.commit()
     return {
         "files_indexed": len({chunk.source_path for chunk in chunks}),
         "chunks_indexed": len(chunks),
+        "chunks_embedded": len(hashes_to_insert),
+        "chunks_deleted": len(hashes_to_delete),
     }
+
+
+async def reindex_knowledge(session: AsyncSession, settings: Settings) -> dict[str, int]:
+    """Full rebuild of the index (used by the admin endpoint)."""
+
+    return await sync_knowledge(session, settings, force=True)
 
 
 async def create_embedding(
@@ -130,9 +180,11 @@ async def retrieve_context(
     session: AsyncSession,
     settings: Settings,
     question: str,
+    question_embedding: Optional[list[float]] = None,
 ) -> list[RetrievedChunk]:
-    client = get_openai_client(settings)
-    question_embedding = await create_embedding(client, settings, question)
+    if question_embedding is None:
+        client = get_openai_client(settings)
+        question_embedding = await create_embedding(client, settings, question)
 
     result = await session.execute(
         text(
@@ -150,7 +202,7 @@ async def retrieve_context(
             """
         ),
         {
-            "embedding": _vector_literal(question_embedding),
+            "embedding": vector_literal(question_embedding),
             "embedding_model": settings.openai_embedding_model,
             "limit": settings.rag_top_k,
         },
@@ -172,8 +224,9 @@ async def answer_question(
     session: AsyncSession,
     settings: Settings,
     question: str,
+    question_embedding: Optional[list[float]] = None,
 ) -> tuple[str, list[RetrievedChunk]]:
-    chunks = await retrieve_context(session, settings, question)
+    chunks = await retrieve_context(session, settings, question, question_embedding)
     if not chunks:
         raise LookupError("No knowledge chunks are indexed yet.")
 
@@ -225,5 +278,5 @@ def _chunk_hash(chunk: KnowledgeChunk) -> str:
     return hashlib.sha256(hash_input.encode("utf-8")).hexdigest()
 
 
-def _vector_literal(embedding: list[float]) -> str:
+def vector_literal(embedding: list[float]) -> str:
     return "[" + ",".join(str(value) for value in embedding) + "]"

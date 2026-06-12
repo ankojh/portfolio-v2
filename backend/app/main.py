@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 from typing import Any, Optional
 
@@ -7,11 +8,26 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
-from app.db import dispose_engine, get_session
+from app.db import AsyncSessionLocal, dispose_engine, get_session
 from app.portfolio_guard import is_portfolio_question
-from app.question_events import count_recent_question_events, extract_ip_address, record_question_event
-from app.rag import answer_question, reindex_knowledge
-from app.schemas import AskRequest, AskResponse, IngestResponse, SourceChunk
+from app.question_events import (
+    count_recent_question_events,
+    extract_ip_address,
+    get_top_question_clusters,
+    record_question_event,
+)
+from app.rag import answer_question, create_embedding, get_openai_client, reindex_knowledge, sync_knowledge
+from app.schemas import (
+    AskRequest,
+    AskResponse,
+    IngestResponse,
+    SourceChunk,
+    TopQuestionResponse,
+    TopQuestionsResponse,
+)
+
+# Use uvicorn's logger so startup sync output is visible in server logs.
+logger = logging.getLogger("uvicorn.error")
 
 RATE_LIMIT_MESSAGE = (
     "Rate limit exceeded. Please wait before asking again. "
@@ -31,8 +47,27 @@ async def fetch_app_version(session: AsyncSession) -> str:
     return version or "unknown"
 
 
+async def sync_knowledge_on_startup() -> None:
+    """Keep the knowledge index in sync with the shipped knowledge files.
+
+    Runs on every boot but only embeds chunks whose content changed, so steady
+    restarts are a no-op. Failures (e.g. missing OPENAI_API_KEY or OpenAI being
+    unreachable) are logged but never block the app from starting.
+    """
+
+    settings = get_settings()
+    try:
+        async with AsyncSessionLocal() as session:
+            result = await sync_knowledge(session, settings)
+        logger.info("Knowledge sync on startup: %s", result)
+    except Exception:  # noqa: BLE001 - startup must not crash on sync failure
+        logger.exception("Knowledge sync on startup failed; serving with existing index")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await sync_knowledge_on_startup()
+
     yield
 
     await dispose_engine()
@@ -130,16 +165,32 @@ def create_app() -> FastAPI:
                 detail=UNRELATED_QUESTION_MESSAGE,
             )
 
+        try:
+            client = get_openai_client(settings)
+            question_embedding = await create_embedding(client, settings, payload.question)
+        except RuntimeError as error:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=str(error),
+            ) from error
+
         await record_question_event(
             session=session,
             request=http_request,
             question=payload.question,
             client_metadata=payload.client_metadata,
             event_status="accepted",
+            question_embedding=question_embedding,
+            embedding_model=settings.openai_embedding_model,
         )
 
         try:
-            answer, chunks = await answer_question(session, settings, payload.question)
+            answer, chunks = await answer_question(
+                session,
+                settings,
+                payload.question,
+                question_embedding,
+            )
         except LookupError as error:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -162,6 +213,26 @@ def create_app() -> FastAPI:
                 )
                 for chunk in chunks
             ],
+        )
+
+    @app.get("/questions/top", response_model=TopQuestionsResponse)
+    async def top_questions(session: AsyncSession = Depends(get_session)) -> TopQuestionsResponse:
+        try:
+            questions = await get_top_question_clusters(session, settings)
+        except RuntimeError as error:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=str(error),
+            ) from error
+
+        return TopQuestionsResponse(
+            questions=[
+                TopQuestionResponse(
+                    question=question.question,
+                    asked_count=question.asked_count,
+                )
+                for question in questions
+            ]
         )
 
     return app

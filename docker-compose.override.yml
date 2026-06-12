@@ -1,0 +1,7 @@
+# Local override: host has its own Postgres on 5432, so expose the
+# project's pgvector Postgres on 5433 instead. The backend still reaches
+# it via the internal "postgres:5432" hostname, so nothing else changes.
+services:
+  postgres:
+    ports: !reset
+      - "5433:5432"

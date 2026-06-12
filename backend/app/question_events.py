@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from typing import Any, Optional
 
 from fastapi import Request
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.config import Settings
+from app.rag import create_embedding, get_openai_client, vector_literal
 
 
 TRACKED_HEADERS = (
@@ -31,6 +35,12 @@ TRACKED_HEADERS = (
 )
 
 
+@dataclass(frozen=True)
+class TopQuestion:
+    question: str
+    asked_count: int
+
+
 async def record_question_event(
     session: AsyncSession,
     request: Request,
@@ -38,6 +48,8 @@ async def record_question_event(
     client_metadata: Optional[dict[str, Any]],
     event_status: str = "accepted",
     rejection_reason: Optional[str] = None,
+    question_embedding: Optional[list[float]] = None,
+    embedding_model: Optional[str] = None,
 ) -> None:
     user_agent = request.headers.get("user-agent")
     request_metadata = build_request_metadata(request)
@@ -56,7 +68,9 @@ async def record_question_event(
                 request_metadata,
                 client_metadata,
                 status,
-                rejection_reason
+                rejection_reason,
+                question_embedding,
+                embedding_model
             )
             VALUES (
                 :question,
@@ -69,7 +83,12 @@ async def record_question_event(
                 CAST(:request_metadata AS jsonb),
                 CAST(:client_metadata AS jsonb),
                 :event_status,
-                :rejection_reason
+                :rejection_reason,
+                CASE
+                    WHEN :question_embedding IS NULL THEN NULL
+                    ELSE CAST(:question_embedding AS vector)
+                END,
+                :embedding_model
             )
             """
         ),
@@ -85,9 +104,144 @@ async def record_question_event(
             "client_metadata": json.dumps(client_metadata or {}),
             "event_status": event_status,
             "rejection_reason": rejection_reason,
+            "question_embedding": (
+                vector_literal(question_embedding) if question_embedding is not None else None
+            ),
+            "embedding_model": embedding_model,
         },
     )
     await session.commit()
+
+
+async def backfill_question_embeddings(
+    session: AsyncSession,
+    settings: Settings,
+    *,
+    max_rows: int = 100,
+) -> int:
+    if not settings.openai_api_key:
+        return 0
+
+    result = await session.execute(
+        text(
+            """
+            SELECT id, question
+            FROM question_events
+            WHERE status = 'accepted'
+              AND question_embedding IS NULL
+            ORDER BY created_at DESC
+            LIMIT :limit
+            """
+        ),
+        {"limit": max_rows},
+    )
+    rows = list(result)
+    if not rows:
+        return 0
+
+    client = get_openai_client(settings)
+    for row in rows:
+        embedding = await create_embedding(client, settings, row.question)
+        await session.execute(
+            text(
+                """
+                UPDATE question_events
+                SET
+                    question_embedding = CAST(:question_embedding AS vector),
+                    embedding_model = :embedding_model
+                WHERE id = :id
+                """
+            ),
+            {
+                "id": row.id,
+                "question_embedding": vector_literal(embedding),
+                "embedding_model": settings.openai_embedding_model,
+            },
+        )
+
+    await session.commit()
+    return len(rows)
+
+
+async def get_top_question_clusters(
+    session: AsyncSession,
+    settings: Settings,
+    *,
+    limit: int = 3,
+    candidate_limit: int = 24,
+    similarity_threshold: float = 0.84,
+) -> list[TopQuestion]:
+    await backfill_question_embeddings(session, settings)
+
+    result = await session.execute(
+        text(
+            """
+            WITH accepted AS (
+                SELECT id, question, question_embedding, created_at
+                FROM question_events
+                WHERE status = 'accepted'
+                  AND question_embedding IS NOT NULL
+                  AND embedding_model = :embedding_model
+            )
+            SELECT
+                center.id,
+                center.question,
+                center.created_at,
+                count(neighbor.id) AS asked_count
+            FROM accepted center
+            JOIN accepted neighbor
+              ON 1 - (center.question_embedding <=> neighbor.question_embedding) >= :threshold
+            GROUP BY center.id, center.question, center.created_at
+            ORDER BY asked_count DESC, center.created_at DESC
+            LIMIT :candidate_limit
+            """
+        ),
+        {
+            "embedding_model": settings.openai_embedding_model,
+            "threshold": similarity_threshold,
+            "candidate_limit": candidate_limit,
+        },
+    )
+    candidates = list(result)
+
+    selected: list[TopQuestion] = []
+    selected_ids: list[int] = []
+    for candidate in candidates:
+        if len(selected) >= limit:
+            break
+
+        if selected_ids:
+            duplicate_result = await session.execute(
+                text(
+                    """
+                    SELECT bool_or(
+                        1 - (candidate.question_embedding <=> selected.question_embedding)
+                            >= :threshold
+                    )
+                    FROM question_events candidate
+                    CROSS JOIN question_events selected
+                    WHERE candidate.id = :candidate_id
+                      AND selected.id = ANY(:selected_ids)
+                    """
+                ),
+                {
+                    "candidate_id": candidate.id,
+                    "selected_ids": selected_ids,
+                    "threshold": similarity_threshold,
+                },
+            )
+            if duplicate_result.scalar_one():
+                continue
+
+        selected.append(
+            TopQuestion(
+                question=candidate.question,
+                asked_count=int(candidate.asked_count),
+            )
+        )
+        selected_ids.append(int(candidate.id))
+
+    return selected
 
 
 async def count_recent_question_events(

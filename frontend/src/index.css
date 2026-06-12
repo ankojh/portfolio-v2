@@ -37,3 +37,20 @@
       "calt" 1;
   }
 }
+
+@layer utilities {
+  /* Travelling dash along the status face's mouth while health is loading. */
+  @keyframes mouth-loader {
+    from {
+      stroke-dashoffset: 24;
+    }
+    to {
+      stroke-dashoffset: -24;
+    }
+  }
+
+  .animate-mouth-loader {
+    stroke-dasharray: 7 17;
+    animation: mouth-loader 1.1s linear infinite;
+  }
+}

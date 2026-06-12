@@ -20,6 +20,17 @@ class AskResponse(BaseModel):
     sources: list[SourceChunk]
 
 
+class TopQuestionResponse(BaseModel):
+    question: str
+    asked_count: int
+
+
+class TopQuestionsResponse(BaseModel):
+    questions: list[TopQuestionResponse]
+
+
 class IngestResponse(BaseModel):
     files_indexed: int
     chunks_indexed: int
+    chunks_embedded: int = 0
+    chunks_deleted: int = 0
