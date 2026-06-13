@@ -1,9 +1,11 @@
+import json
 import logging
 from contextlib import asynccontextmanager
-from typing import Any, Optional
+from typing import Any, AsyncIterator, Optional
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,12 +18,17 @@ from app.question_events import (
     get_top_question_clusters,
     record_question_event,
 )
-from app.rag import answer_question, create_embedding, get_openai_client, reindex_knowledge, sync_knowledge
+from app.rag import (
+    create_embedding,
+    get_openai_client,
+    reindex_knowledge,
+    retrieve_context,
+    stream_answer,
+    sync_knowledge,
+)
 from app.schemas import (
     AskRequest,
-    AskResponse,
     IngestResponse,
-    SourceChunk,
     TopQuestionResponse,
     TopQuestionsResponse,
 )
@@ -29,10 +36,6 @@ from app.schemas import (
 # Use uvicorn's logger so startup sync output is visible in server logs.
 logger = logging.getLogger("uvicorn.error")
 
-RATE_LIMIT_MESSAGE = (
-    "Rate limit exceeded. Please wait before asking again. "
-    "Limit is 10 questions per IP every 30 minutes."
-)
 UNRELATED_QUESTION_MESSAGE = (
     "This chat only answers questions about Ankit Ojha's portfolio, work, projects, "
     "skills, background, or contact details."
@@ -124,12 +127,12 @@ def create_app() -> FastAPI:
 
         return IngestResponse(**result)
 
-    @app.post("/ask", response_model=AskResponse)
+    @app.post("/ask")
     async def ask(
         payload: AskRequest,
         http_request: Request,
         session: AsyncSession = Depends(get_session),
-    ) -> AskResponse:
+    ) -> StreamingResponse:
         ip_address = extract_ip_address(http_request)
         recent_question_count = await count_recent_question_events(
             session=session,
@@ -148,7 +151,11 @@ def create_app() -> FastAPI:
             )
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail=RATE_LIMIT_MESSAGE,
+                detail=(
+                    "Rate limit exceeded. Please wait before asking again. "
+                    f"Limit is {settings.ask_rate_limit_count} questions per IP "
+                    f"every {settings.ask_rate_limit_window_minutes} minutes."
+                ),
             )
 
         if not is_portfolio_question(payload.question):
@@ -184,35 +191,30 @@ def create_app() -> FastAPI:
             embedding_model=settings.openai_embedding_model,
         )
 
-        try:
-            answer, chunks = await answer_question(
-                session,
-                settings,
-                payload.question,
-                question_embedding,
-            )
-        except LookupError as error:
+        chunks = await retrieve_context(session, settings, payload.question, question_embedding)
+        if not chunks:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=str(error),
-            ) from error
-        except RuntimeError as error:
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail=str(error),
-            ) from error
+                detail="No knowledge chunks are indexed yet.",
+            )
 
-        return AskResponse(
-            answer=answer,
-            sources=[
-                SourceChunk(
-                    source_path=chunk.source_path,
-                    title=chunk.title,
-                    similarity=chunk.similarity,
-                    content=chunk.content,
-                )
-                for chunk in chunks
-            ],
+        # All DB work is done above; the generator must not touch the session
+        # because it runs after this handler returns.
+        async def event_stream() -> AsyncIterator[str]:
+            try:
+                async for delta in stream_answer(
+                    settings, payload.question, chunks, payload.history
+                ):
+                    yield f"data: {json.dumps({'delta': delta})}\n\n"
+                yield 'data: {"done": true}\n\n'
+            except Exception:  # noqa: BLE001 - surface a generic error to the client
+                logger.exception("Answer streaming failed")
+                yield 'data: {"error": "Answer generation failed. Please try again."}\n\n'
+
+        return StreamingResponse(
+            event_stream(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
         )
 
     @app.get("/questions/top", response_model=TopQuestionsResponse)

@@ -3,13 +3,14 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import AsyncIterator, Optional
 
 from openai import AsyncOpenAI
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings
+from app.schemas import ChatTurn
 
 
 @dataclass(frozen=True)
@@ -220,31 +221,42 @@ async def retrieve_context(
     ]
 
 
-async def answer_question(
-    session: AsyncSession,
+async def stream_answer(
     settings: Settings,
     question: str,
-    question_embedding: Optional[list[float]] = None,
-) -> tuple[str, list[RetrievedChunk]]:
-    chunks = await retrieve_context(session, settings, question, question_embedding)
-    if not chunks:
-        raise LookupError("No knowledge chunks are indexed yet.")
-
+    chunks: list[RetrievedChunk],
+    history: Optional[list[ChatTurn]] = None,
+) -> AsyncIterator[str]:
     client = get_openai_client(settings)
     context = "\n\n".join(
         f"Source: {chunk.source_path}\nTitle: {chunk.title}\nContent:\n{chunk.content}"
         for chunk in chunks
     )
-    response = await client.responses.create(
+    input_messages: list[dict[str, str]] = [
+        {"role": turn.role, "content": turn.content} for turn in (history or [])
+    ]
+    input_messages.append(
+        {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"}
+    )
+    stream = await client.responses.create(
         model=settings.openai_answer_model,
         instructions=(
-            "You answer questions about Ankit Ojha's portfolio. Use only the provided "
-            "context. If the answer is not in the context, say that the portfolio "
-            "knowledge base does not contain that information yet. Keep answers concise."
+            "You answer questions about Ankit Ojha's portfolio on his portfolio site. "
+            "Visitors may refer to Ankit as 'he', 'him', or 'you'. Use only the provided "
+            "context and conversation to answer. If the answer is not in the context, "
+            "say that the portfolio knowledge base does not contain that information "
+            "yet, and steer the visitor back to Ankit's work, skills, or background. "
+            "Keep answers concise."
         ),
-        input=f"Context:\n{context}\n\nQuestion: {question}",
+        input=input_messages,
+        # Minimal reasoning keeps time-to-first-token low so the answer visibly
+        # streams; the context is pre-retrieved, so deep reasoning adds nothing.
+        reasoning={"effort": "minimal"},
+        stream=True,
     )
-    return response.output_text, chunks
+    async for event in stream:
+        if event.type == "response.output_text.delta":
+            yield event.delta
 
 
 def _extract_title(content: str, markdown_path: Path) -> str:

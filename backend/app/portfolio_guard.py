@@ -92,6 +92,14 @@ UNRELATED_TERMS = {
 
 
 def is_portfolio_question(question: str) -> bool:
+    """Block only clearly unrelated questions.
+
+    Ambiguous questions ("is he any good?", "tell me more") default to allowed:
+    the answer model only sees portfolio context and is instructed to deflect
+    anything the knowledge base does not cover, and the per-IP rate limit
+    bounds abuse. Explicit portfolio signals win over unrelated terms.
+    """
+
     normalized = question.lower().strip()
     words = set(re.findall(r"[a-z0-9]+", normalized))
 
@@ -104,4 +112,4 @@ def is_portfolio_question(question: str) -> bool:
     if words.intersection(UNRELATED_TERMS):
         return False
 
-    return False
+    return True
