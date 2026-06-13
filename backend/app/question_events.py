@@ -84,10 +84,7 @@ async def record_question_event(
                 CAST(:client_metadata AS jsonb),
                 :event_status,
                 :rejection_reason,
-                CASE
-                    WHEN :question_embedding IS NULL THEN NULL
-                    ELSE CAST(:question_embedding AS vector)
-                END,
+                CAST(:question_embedding AS vector),
                 :embedding_model
             )
             """
