@@ -1,10 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
-import { ArrowUp, Scale } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { DottedBackground } from "@/components/DottedBackground";
 import { IntroCards } from "@/components/IntroCards";
 import { ResumeButton } from "@/components/ResumeButton";
+import { SocialLinks } from "@/components/SocialLinks";
 import { StatusFace } from "@/components/StatusFace";
 import { introCards } from "@/data/profile";
 
@@ -12,16 +14,6 @@ type HealthResponse = {
   status: "ok" | "degraded";
   database: "ok" | "unavailable";
   app_version: string;
-};
-
-type AskResponse = {
-  answer: string;
-  sources: Array<{
-    source_path: string;
-    title: string;
-    similarity: number;
-    content: string;
-  }>;
 };
 
 type TopQuestionsResponse = {
@@ -35,7 +27,6 @@ type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
-  sources?: AskResponse["sources"];
 };
 
 type NetworkInformation = {
@@ -62,7 +53,11 @@ async function getHealth(): Promise<HealthResponse> {
   return response.json() as Promise<HealthResponse>;
 }
 
-async function askQuestion(question: string): Promise<AskResponse> {
+async function askQuestion(
+  question: string,
+  history: Array<{ role: ChatMessage["role"]; content: string }>,
+  onDelta: (delta: string) => void,
+): Promise<void> {
   const response = await fetch(`${apiBaseUrl || "/api"}/ask`, {
     method: "POST",
     headers: {
@@ -70,16 +65,58 @@ async function askQuestion(question: string): Promise<AskResponse> {
     },
     body: JSON.stringify({
       question,
+      history,
       client_metadata: getClientMetadata(),
     }),
   });
 
   if (!response.ok) {
-    const errorBody = (await response.json().catch(() => null)) as { detail?: string } | null;
+    const errorBody = (await response.json().catch(() => null)) as {
+      detail?: string;
+    } | null;
     throw new Error(errorBody?.detail ?? "Ask request failed");
   }
 
-  return response.json() as Promise<AskResponse>;
+  if (!response.body) {
+    throw new Error("Ask request failed");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+
+    buffer += decoder.decode(value, { stream: true });
+    const events = buffer.split("\n\n");
+    buffer = events.pop() ?? "";
+
+    for (const event of events) {
+      const dataLine = event
+        .split("\n")
+        .find((line) => line.startsWith("data: "));
+      if (!dataLine) {
+        continue;
+      }
+
+      const payload = JSON.parse(dataLine.slice("data: ".length)) as {
+        delta?: string;
+        error?: string;
+        done?: boolean;
+      };
+
+      if (payload.error) {
+        throw new Error(payload.error);
+      }
+      if (payload.delta) {
+        onDelta(payload.delta);
+      }
+    }
+  }
 }
 
 async function getTopQuestions(): Promise<TopQuestionsResponse> {
@@ -108,7 +145,9 @@ function getClientMetadata(): Record<string, unknown> {
     hardware_concurrency: navigator.hardwareConcurrency,
     device_memory_gb: navigatorWithHints.deviceMemory,
     max_touch_points: navigator.maxTouchPoints,
-    color_scheme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+    color_scheme: window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light",
     viewport: {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -153,17 +192,34 @@ export function App() {
     staleTime: 60_000,
   });
   const askMutation = useMutation({
-    mutationFn: askQuestion,
-    onSuccess: (response) => {
-      setMessages((currentMessages) => [
-        ...currentMessages,
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: response.answer,
-          sources: response.sources,
-        },
-      ]);
+    mutationFn: async (nextQuestion: string) => {
+      let messageId: string | null = null;
+      const history = messages
+        .filter((message) => message.id !== "initial")
+        .slice(-10)
+        .map((message) => ({
+          role: message.role,
+          content: message.content.slice(0, 4000),
+        }));
+
+      await askQuestion(nextQuestion, history, (delta) => {
+        if (messageId === null) {
+          messageId = crypto.randomUUID();
+          setMessages((currentMessages) => [
+            ...currentMessages,
+            { id: messageId as string, role: "assistant", content: delta },
+          ]);
+          return;
+        }
+
+        setMessages((currentMessages) =>
+          currentMessages.map((message) =>
+            message.id === messageId
+              ? { ...message, content: message.content + delta }
+              : message,
+          ),
+        );
+      });
     },
     onError: (error) => {
       setMessages((currentMessages) => [
@@ -171,13 +227,17 @@ export function App() {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: error instanceof Error ? error.message : "Something went wrong.",
+          content:
+            error instanceof Error ? error.message : "Something went wrong.",
         },
       ]);
     },
   });
   const topQuestions = topQuestionsData?.questions ?? [];
-  const showTopQuestions = messages.length === 1 && messages[0]?.id === "initial" && topQuestions.length > 0;
+  const showTopQuestions =
+    messages.length === 1 &&
+    messages[0]?.id === "initial" &&
+    topQuestions.length > 0;
 
   function submitQuestion(nextQuestion: string) {
     const trimmedQuestion = nextQuestion.trim();
@@ -220,6 +280,7 @@ export function App() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <DottedBackground />
       {/* Pinned to the tab's top-right corner, independent of the centered content. */}
       <div className="fixed right-2 top-2 z-50">
         <StatusFace
@@ -228,11 +289,14 @@ export function App() {
           loading={isLoading}
         />
       </div>
-      <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 py-5 sm:px-6">
+      <section className="relative mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 py-5 sm:px-6">
         <header className="flex items-center justify-between border-b border-border pb-3">
-          <h1 className="text-lg font-semibold tracking-normal">Ankit Ojha's Portfolio</h1>
+          <h1 className="text-lg font-semibold tracking-normal">Ankit Ojha</h1>
           {/* Clear the fixed corner face on narrow screens where the header meets the edge. */}
-          <ResumeButton className="mr-8 md:mr-0" />
+          <div className="mr-8 flex items-center gap-1 md:mr-0">
+            <SocialLinks />
+            <ResumeButton className="ml-1" />
+          </div>
         </header>
 
         {!introComplete ? (
@@ -257,22 +321,20 @@ export function App() {
                     }`}
                   >
                     <p>{message.content}</p>
-                    {message.sources && message.sources.length > 0 && (
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        {message.sources.map((source) => source.title).join(", ")}
-                      </p>
-                    )}
                   </article>
                 ))}
-                {askMutation.isPending && (
-                  <p className="max-w-[85%] rounded-lg bg-muted px-4 py-3 text-sm leading-6 text-muted-foreground">
-                    Thinking...
-                  </p>
-                )}
+                {askMutation.isPending &&
+                  messages[messages.length - 1]?.role === "user" && (
+                    <p className="max-w-[85%] rounded-lg bg-muted px-4 py-3 text-sm leading-6 text-muted-foreground">
+                      Thinking...
+                    </p>
+                  )}
                 {showTopQuestions && (
                   <div className="flex max-w-[85%] flex-col gap-2">
-                    <p className="text-xs text-muted-foreground">Popular questions</p>
-                    <div className="flex flex-wrap gap-2">
+                    <p className="text-xs text-muted-foreground">
+                      Popular questions
+                    </p>
+                    <div className="flex flex-col items-start gap-2">
                       {topQuestions.map((topQuestion) => (
                         <button
                           key={topQuestion.question}
@@ -289,7 +351,10 @@ export function App() {
                 )}
               </div>
 
-              <form className="flex gap-2 border-t border-border p-3 sm:p-4" onSubmit={handleSubmit}>
+              <form
+                className="flex gap-2 border-t border-border p-3 sm:p-4"
+                onSubmit={handleSubmit}
+              >
                 <input
                   value={question}
                   onChange={(event) => setQuestion(event.target.value)}
@@ -307,11 +372,10 @@ export function App() {
                 </Button>
               </form>
             </div>
-            <div className="mt-3 flex items-start gap-2 px-1 text-xs leading-5 text-muted-foreground">
-              <Scale className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <div className="mt-3 px-1 text-center text-xs leading-5 text-muted-foreground">
               <p>
-                Chat history is on. This is not a GDPR force field, so maybe do not paste
-                your passport, tax secrets, or grandma's lasagna recipe.
+                Chat history is on and GDPRn't, so maybe don't paste your
+                passport, tax secrets, or grandma's lasagna recipe.
               </p>
             </div>
           </section>

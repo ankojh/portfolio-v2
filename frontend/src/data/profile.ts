@@ -7,6 +7,13 @@ export const profile = {
   photoUrl: "/profile-placeholder.svg",
   // Override at build time with VITE_RESUME_URL if the resume is hosted elsewhere.
   resumeUrl: import.meta.env.VITE_RESUME_URL || "/resume.pdf",
+  socials: {
+    github: "https://github.com/ankojh",
+    // Placeholder handles — swap in the real profile URLs.
+    linkedin: "https://www.linkedin.com/in/ankojh",
+    x: "https://x.com/ankojh",
+    email: "ankitkumarojha2@gmail.com",
+  },
 };
 
 export type IntroCard = {
