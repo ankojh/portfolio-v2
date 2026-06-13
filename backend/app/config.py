@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     knowledge_dir: str = "knowledge"
     rag_top_k: int = 4
     admin_api_token: Optional[str] = None
-    ask_rate_limit_count: int = 10
+    ask_rate_limit_count: int = 12
     ask_rate_limit_window_minutes: int = 30
     cors_origins: str = Field(
         default=(

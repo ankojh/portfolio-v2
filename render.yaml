@@ -21,7 +21,7 @@ services:
       - key: RAG_TOP_K
         value: 4
       - key: ASK_RATE_LIMIT_COUNT
-        value: 10
+        value: 12
       - key: ASK_RATE_LIMIT_WINDOW_MINUTES
         value: 30
       - key: OPENAI_API_KEY
