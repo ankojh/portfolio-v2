@@ -86,15 +86,23 @@ Primary:  <your-frontend-domain>
 Redirect: www.<your-frontend-domain> -> <your-frontend-domain>
 ```
 
-### Render Backend
+### Render Backend + Neon Postgres
 
-[render.yaml](/Users/ankojh/b12/portfolio-v2/render.yaml) defines a Python web service rooted at `backend/` and a managed Postgres database. The backend accepts Render's plain `postgresql://...` connection string and converts it to SQLAlchemy's asyncpg URL internally.
+[render.yaml](/Users/ankojh/b12/portfolio-v2/render.yaml) defines a Python web service rooted at `backend/`. The database is hosted separately in Neon and provided to Render through the `DATABASE_URL` secret environment variable.
+
+Use Neon's direct Postgres connection string for `DATABASE_URL`, including SSL:
+
+```bash
+DATABASE_URL=postgresql://<user>:<password>@<endpoint>.neon.tech/<database>?sslmode=require
+```
+
+The backend accepts plain `postgresql://...` or `postgres://...` connection strings and converts them to SQLAlchemy's asyncpg driver internally. Neon-style SSL query params such as `sslmode=require` are normalized for asyncpg.
 
 Render environment variables:
 
 ```bash
 APP_VERSION=0.1.0
-DATABASE_URL=<Render Postgres connection string>
+DATABASE_URL=<Neon Postgres connection string with sslmode=require>
 CORS_ORIGINS=https://<your-frontend-domain>,https://www.<your-frontend-domain>
 OPENAI_API_KEY=<your OpenAI API key>
 OPENAI_ANSWER_MODEL=gpt-5-mini
@@ -107,7 +115,7 @@ ASK_RATE_LIMIT_COUNT=10
 ASK_RATE_LIMIT_WINDOW_MINUTES=30
 ```
 
-The initial Alembic migration runs `CREATE EXTENSION IF NOT EXISTS vector`, so the database is ready for pgvector-backed tables.
+Create the Neon database before deploying the Render backend. The initial Alembic migration runs `CREATE EXTENSION IF NOT EXISTS vector`, so the database needs a Neon Postgres branch/database where the `vector` extension is available.
 
 Schema is managed with Alembic migrations in `backend/migrations`. The backend start command runs:
 

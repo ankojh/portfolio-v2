@@ -1,8 +1,12 @@
 from functools import lru_cache
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine import make_url
+
+
+ASYNC_PG_DSN_ONLY_QUERY_KEYS = ("channel_binding", "sslmode")
 
 
 class Settings(BaseSettings):
@@ -36,13 +40,28 @@ class Settings(BaseSettings):
 
     @property
     def sqlalchemy_database_url(self) -> str:
-        if self.database_url.startswith("postgres://"):
-            return self.database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+        url = make_url(self.database_url)
+        if url.drivername in {"postgres", "postgresql"}:
+            url = url.set(drivername="postgresql+asyncpg")
 
-        if self.database_url.startswith("postgresql://"):
-            return self.database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        # Neon/libpq URLs commonly include query params such as sslmode and
+        # channel_binding. SQLAlchemy's asyncpg dialect would pass those as
+        # keyword args to asyncpg.connect(), where they are not accepted.
+        url = url.difference_update_query(ASYNC_PG_DSN_ONLY_QUERY_KEYS)
 
-        return self.database_url
+        return url.render_as_string(hide_password=False)
+
+    @property
+    def sqlalchemy_connect_args(self) -> dict[str, Any]:
+        url = make_url(self.database_url)
+        sslmode = url.query.get("sslmode")
+        if isinstance(sslmode, tuple):
+            sslmode = sslmode[-1]
+
+        if not sslmode or sslmode == "disable" or "ssl" in url.query:
+            return {}
+
+        return {"ssl": sslmode}
 
 
 @lru_cache

@@ -6,7 +6,11 @@ from app.config import get_settings
 
 settings = get_settings()
 
-engine = create_async_engine(settings.sqlalchemy_database_url, pool_pre_ping=True)
+engine = create_async_engine(
+    settings.sqlalchemy_database_url,
+    connect_args=settings.sqlalchemy_connect_args,
+    pool_pre_ping=True,
+)
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
