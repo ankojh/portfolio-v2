@@ -50,11 +50,11 @@ async def record_question_event(
     rejection_reason: Optional[str] = None,
     question_embedding: Optional[list[float]] = None,
     embedding_model: Optional[str] = None,
-) -> None:
+) -> int:
     user_agent = request.headers.get("user-agent")
     request_metadata = build_request_metadata(request)
 
-    await session.execute(
+    result = await session.execute(
         text(
             """
             INSERT INTO question_events (
@@ -87,6 +87,7 @@ async def record_question_event(
                 CAST(:question_embedding AS vector),
                 :embedding_model
             )
+            RETURNING id
             """
         ),
         {
@@ -105,6 +106,29 @@ async def record_question_event(
                 vector_literal(question_embedding) if question_embedding is not None else None
             ),
             "embedding_model": embedding_model,
+        },
+    )
+    await session.commit()
+    return int(result.scalar_one())
+
+
+async def update_question_event_answer(
+    session: AsyncSession,
+    *,
+    event_id: int,
+    assistant_answer: str,
+) -> None:
+    await session.execute(
+        text(
+            """
+            UPDATE question_events
+            SET assistant_answer = :assistant_answer
+            WHERE id = :event_id
+            """
+        ),
+        {
+            "event_id": event_id,
+            "assistant_answer": assistant_answer,
         },
     )
     await session.commit()

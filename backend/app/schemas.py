@@ -9,7 +9,7 @@ class ChatTurn(BaseModel):
 
 
 class AskRequest(BaseModel):
-    question: str = Field(min_length=3, max_length=1000)
+    question: str = Field(min_length=3, max_length=10000)
     history: list[ChatTurn] = Field(default_factory=list, max_length=12)
     client_metadata: dict[str, Any] = Field(default_factory=dict)
 
