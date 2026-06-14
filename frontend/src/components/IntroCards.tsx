@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { introCards, profile, type IntroCard } from "@/data/profile";
@@ -8,14 +8,17 @@ const MAX_VISIBLE = 3;
 export function IntroCards({
   activeIndex,
   onAdvance,
+  onBack,
   onSkip,
 }: {
   activeIndex: number;
   onAdvance: () => void;
+  onBack: () => void;
   onSkip: () => void;
 }) {
   const total = introCards.length;
   const isLast = activeIndex === total - 1;
+  const canGoBack = activeIndex > 0;
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 py-6">
@@ -54,6 +57,15 @@ export function IntroCards({
       </div>
 
       <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onBack}
+          disabled={!canGoBack}
+          className="flex items-center gap-1 text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline disabled:pointer-events-none disabled:opacity-35"
+        >
+          <ArrowLeft className="size-3.5" />
+          Back
+        </button>
         <div className="flex gap-1.5" aria-label={`Card ${activeIndex + 1} of ${total}`}>
           {introCards.map((card, index) => (
             <span
@@ -112,13 +124,13 @@ function IntroCardFace({
         )}
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold tracking-tight">{card.title}</h2>
-          {card.subtitle && <p className="text-sm font-medium text-primary">{card.subtitle}</p>}
+          {card.subtitle && <p className="text-sm font-medium text-foreground">{card.subtitle}</p>}
         </div>
         <p className="text-sm leading-6 text-muted-foreground">{card.body}</p>
       </div>
 
       <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        {isLast ? "Tap to start chatting" : "Tap to continue"}
+        {isLast ? "Ask about Ankit" : "Tap to continue"}
         <ArrowRight className="size-3.5" />
       </div>
     </Card>

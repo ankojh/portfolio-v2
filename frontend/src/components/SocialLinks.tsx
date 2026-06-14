@@ -86,7 +86,7 @@ export function SocialLinks() {
   return (
     <>
       {links.map(({ href, label, Icon }) => (
-        <Button key={label} asChild variant="ghost" size="icon">
+        <Button key={label} asChild variant="ghost" size="icon" className="size-9 sm:size-11">
           <a href={href} target="_blank" rel="noreferrer" aria-label={label}>
             <Icon className="size-4" />
           </a>
@@ -97,6 +97,7 @@ export function SocialLinks() {
           key={label}
           variant="ghost"
           size="icon"
+          className="size-9 sm:size-11"
           aria-label={label}
           onClick={() => copyToClipboard(value, toast)}
         >

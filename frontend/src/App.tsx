@@ -278,6 +278,10 @@ export function App() {
     });
   }
 
+  function goBackIntro() {
+    setIntroActiveIndex((current) => Math.max(0, current - 1));
+  }
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <DottedBackground />
@@ -290,12 +294,12 @@ export function App() {
         />
       </div>
       <section className="relative mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 py-5 sm:px-6">
-        <header className="flex items-center justify-between border-b border-border pb-3">
-          <h1 className="text-lg font-semibold tracking-normal">Ankit Ojha</h1>
+        <header className="flex items-center justify-end border-b border-border pb-3 sm:justify-between">
+          <h1 className="hidden text-lg font-semibold tracking-normal sm:block">Ankit Ojha</h1>
           {/* Clear the fixed corner face on narrow screens where the header meets the edge. */}
-          <div className="mr-8 flex items-center gap-1 md:mr-0">
+          <div className="mr-8 flex items-center gap-0 sm:gap-1 md:mr-0">
             <SocialLinks />
-            <ResumeButton className="ml-1" />
+            <ResumeButton className="ml-0 sm:ml-1" />
           </div>
         </header>
 
@@ -304,11 +308,12 @@ export function App() {
             <IntroCards
               activeIndex={introActiveIndex}
               onAdvance={advanceIntro}
+              onBack={goBackIntro}
               onSkip={finishIntro}
             />
           </section>
         ) : (
-          <section className="flex flex-1 flex-col py-5">
+          <section className="flex flex-1 flex-col pb-2 pt-5 sm:py-5">
             <div className="flex min-h-0 flex-1 flex-col rounded-lg border border-border bg-card">
               <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-5">
                 {messages.map((message) => (
@@ -372,7 +377,7 @@ export function App() {
                 </Button>
               </form>
             </div>
-            <div className="mt-3 px-1 text-center text-xs leading-5 text-muted-foreground">
+            <div className="mt-2 px-1 text-center text-xs leading-5 text-muted-foreground">
               <p>
                 Chat history is on and GDPRn't, so maybe don't paste your
                 passport, tax secrets, or grandma's lasagna recipe.

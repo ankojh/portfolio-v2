@@ -1,15 +1,11 @@
-// Placeholder profile content for the intro card stack. Replace the copy here
-// (and public/profile-placeholder.svg / public/resume.pdf) with real content.
-
 export const profile = {
   name: "Ankit Ojha",
-  designation: "Software Engineer",
-  photoUrl: "/profile-placeholder.svg",
+  designation: "AI Product Engineer",
+  photoUrl: "/pp.png",
   // Override at build time with VITE_RESUME_URL if the resume is hosted elsewhere.
   resumeUrl: import.meta.env.VITE_RESUME_URL || "/resume.pdf",
   socials: {
     github: "https://github.com/ankojh",
-    // Placeholder handles — swap in the real profile URLs.
     linkedin: "https://www.linkedin.com/in/ankojh",
     x: "https://x.com/ankojh",
     email: "ankitkumarojha2@gmail.com",
@@ -33,33 +29,34 @@ export const introCards: IntroCard[] = [
     eyebrow: "Hello, I'm",
     title: profile.name,
     subtitle: profile.designation,
-    body: "Placeholder intro — a one-line hook about who you are and what you build. Tap the card to keep going.",
+    body: "8+ years building full-stack product systems across startups, healthcare operations, equity workflows, internal platforms, and applied AI.",
   },
   {
-    id: "about",
-    eyebrow: "About",
-    title: "What I do",
-    body: "Placeholder summary — a couple of sentences on your focus areas, the kind of problems you enjoy, and the value you bring to a team.",
+    id: "positioning",
+    eyebrow: "What I do",
+    title: "Product-minded engineer",
+    subtitle: "Full-Stack · Product Engineering · Applied AI",
+    body: "I am strongest where product judgment matters: turning ambiguous workflows into reliable systems that real teams can use every day.",
   },
   {
-    id: "experience-1",
-    eyebrow: "Experience",
-    title: "Senior Engineer · Company",
-    subtitle: "2022 — Present",
-    body: "Placeholder experience — what you owned, the impact you had, and a metric or two. Swap in a real role and highlights.",
+    id: "startup-ownership",
+    eyebrow: "Startup experience",
+    title: "Early engineer at Pulley",
+    subtitle: "Valuations · Offer Letters · Workflows",
+    body: "At Pulley, I worked in an early-stage environment and led product work across valuations, communications, and the Offer Letter Builder.",
   },
   {
-    id: "experience-2",
-    eyebrow: "Experience",
-    title: "Engineer · Previous Company",
-    subtitle: "2019 — 2022",
-    body: "Placeholder experience — a second role with a notable project, the stack you used, and the outcome you drove.",
+    id: "operations",
+    eyebrow: "Operational systems",
+    title: "Clinical Operations at Mochi Health",
+    subtitle: "Provider Onboarding · Insurance · Scheduling",
+    body: "At Mochi Health, I owned internal tools for provider workflows, credentialing, dashboards, and operational accuracy.",
   },
   {
     id: "skills",
-    eyebrow: "Toolbox",
-    title: "How I build",
-    subtitle: "TypeScript · React · Python · Postgres",
-    body: "Placeholder skills — your core stack and strengths. Next up: ask me anything about my work in the chat.",
+    eyebrow: "Work style",
+    title: "Reliable teammate",
+    subtitle: "Collaboration · Communication · Team Fit",
+    body: "I communicate clearly, collaborate closely with product, design, operations, and engineering, and try to be the kind of teammate people enjoy working with.",
   },
 ];
