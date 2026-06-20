@@ -27,6 +27,32 @@ export async function getTopQuestions(): Promise<TopQuestionsResponse> {
   return response.json() as Promise<TopQuestionsResponse>;
 }
 
+export function recordResumeDownload(resumeUrl: string): void {
+  const body = JSON.stringify({
+    resume_url: resumeUrl,
+    client_metadata: getClientMetadata(),
+  });
+  const url = `${apiBaseUrl}/resume/download`;
+
+  if (navigator.sendBeacon) {
+    const payload = new Blob([body], { type: "application/json" });
+    if (navigator.sendBeacon(url, payload)) {
+      return;
+    }
+  }
+
+  void fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body,
+    keepalive: true,
+  }).catch(() => {
+    // Analytics failures should not block the browser download.
+  });
+}
+
 export async function askQuestion({
   question,
   history,

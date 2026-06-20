@@ -14,6 +14,15 @@ class AskRequest(BaseModel):
     client_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+class ResumeDownloadRequest(BaseModel):
+    resume_url: str = Field(min_length=1, max_length=2000)
+    client_metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ResumeDownloadResponse(BaseModel):
+    id: int
+
+
 class TopQuestionResponse(BaseModel):
     question: str
     asked_count: int

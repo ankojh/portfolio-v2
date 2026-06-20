@@ -10,9 +10,12 @@ from app.db import get_session
 from app.lifespan import lifespan
 from app.rag import reindex_knowledge
 from app.question_events import get_top_question_clusters
+from app.resume_events import record_resume_download_event
 from app.schemas import (
     AskRequest,
     IngestResponse,
+    ResumeDownloadRequest,
+    ResumeDownloadResponse,
     TopQuestionResponse,
     TopQuestionsResponse,
 )
@@ -65,6 +68,20 @@ def create_app() -> FastAPI:
             session=session,
             settings=settings,
         )
+
+    @app.post("/resume/download", response_model=ResumeDownloadResponse)
+    async def resume_download(
+        payload: ResumeDownloadRequest,
+        http_request: Request,
+        session: AsyncSession = Depends(get_session),
+    ) -> ResumeDownloadResponse:
+        event_id = await record_resume_download_event(
+            session=session,
+            request=http_request,
+            resume_url=payload.resume_url,
+            client_metadata=payload.client_metadata,
+        )
+        return ResumeDownloadResponse(id=event_id)
 
     @app.get("/questions/top", response_model=TopQuestionsResponse)
     async def top_questions(session: AsyncSession = Depends(get_session)) -> TopQuestionsResponse:

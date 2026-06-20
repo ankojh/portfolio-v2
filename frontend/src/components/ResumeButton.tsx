@@ -2,6 +2,7 @@ import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { profile } from "@/data/profile";
+import { recordResumeDownload } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export function ResumeButton({ className }: { className?: string }) {
@@ -11,11 +12,16 @@ export function ResumeButton({ className }: { className?: string }) {
       variant="outline"
       size="sm"
       className={cn(
-        "border-border/80 bg-card shadow-[0_8px_24px_rgba(15,23,42,0.08)] ring-1 ring-black/[0.035] transition-shadow hover:bg-card hover:shadow-[0_12px_32px_rgba(15,23,42,0.12)]",
+        "h-9 rounded-lg border-border bg-card px-3 text-card-foreground shadow-sm ring-1 ring-black/5 transition-all hover:bg-card hover:text-card-foreground hover:shadow-md",
         className,
       )}
     >
-      <a href={profile.resumeUrl} download aria-label="Download resume">
+      <a
+        href={profile.resumeUrl}
+        download
+        aria-label="Download resume"
+        onClick={() => recordResumeDownload(profile.resumeUrl)}
+      >
         <Download className="size-4" />
         <span className="ml-2">Resume</span>
       </a>
