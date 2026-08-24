@@ -10,7 +10,7 @@ privacy: public_portfolio_safe
 
 ## Summary
 
-Ankit is a strong fit for startups because he has already worked in early-stage environments and has shipped product areas with high ownership.
+Ankit is a strong fit for startups because he has already operated as an early engineer, shaped ambiguous product areas, and shipped multiple 0-to-1 products with high ownership.
 
 ## Startup traits
 
@@ -18,8 +18,9 @@ Ankit brings:
 
 - High ownership.
 - Comfort with ambiguity.
+- 0-to-1 product judgment.
 - Full-stack execution.
-- Product thinking.
+- Product discovery and prioritization.
 - Startup pace experience.
 - Ability to work with cross-functional teams.
 - Willingness to own unglamorous but important workflows.
@@ -37,7 +38,7 @@ Strong examples:
 
 ## Evidence from Mochi Health
 
-At Mochi Health, Ankit works on healthcare operations systems. This requires practical judgment because mistakes in internal workflows can create real operational problems.
+At Mochi Health, Ankit led engineering and contributed to discovery for healthcare operations systems. This required practical judgment because mistakes in internal workflows can create real operational problems.
 
 Strong examples:
 
@@ -58,8 +59,8 @@ No. He is frontend-strong, but his work spans full-stack product systems, backen
 
 ### Is Ankit a fit for AI startups?
 
-He is a strong fit for AI product engineering roles where the job is to build useful AI-enabled workflows. He should not be positioned as a deep ML researcher.
+He is a strong fit for technical product-management roles where the job is to discover and ship useful AI-enabled workflows. He should not be positioned as a deep ML researcher.
 
 ### What type of startup should hire Ankit?
 
-A startup building SaaS, internal tools, workflow automation, AI-assisted operations, healthcare operations, equity/finance workflows, or product-led B2B software.
+A startup that needs a technically fluent PM or product builder for SaaS, internal tools, workflow automation, AI-assisted operations, healthcare operations, equity/finance workflows, or product-led B2B software.

@@ -1,7 +1,7 @@
 ---
 title: Resume Source of Truth
-summary: Canonical resume facts and phrasing for the portfolio assistant.
-tags: resume, source_of_truth, career, ai_product_engineer
+summary: Canonical resume facts and product-management phrasing for the portfolio assistant.
+tags: resume, source_of_truth, career, product_management, applied_ai
 audience: Recruiters, resume screeners, RAG system
 privacy: public_portfolio_safe
 ---
@@ -14,63 +14,58 @@ Ankit Ojha
 
 ## Professional headline
 
-AI Product Engineer | Full-Stack | React | TypeScript | Applied AI
+Product Management | Applied AI | Full-Stack Engineer
 
 Alternative headline:
 
-AI Product Engineer with 8+ years of full-stack product engineering experience.
+Product manager with engineering depth and 8+ years of full-stack startup experience.
 
 ## Summary
 
-AI Product Engineer with 8+ years of experience building full-stack product systems across healthcare operations, equity management, internal tools, and enterprise software. Strong in React, TypeScript, Node.js, PostgreSQL, and workflow-heavy product engineering. Experienced in startup environments, cross-functional collaboration, and end-to-end ownership. Currently building practical AI systems with RAG, OpenAI APIs, agents, tool/function calling, and LLM evaluation.
+Product-focused Full-Stack Engineer with 8+ years of experience building and launching products across healthcare, fintech, and enterprise software. Experienced in product discovery, user research, requirements definition, prioritization, product analytics, and cross-functional execution, backed by a strong software engineering background and hands-on experience with AI-enabled products and workflows.
 
 ## Experience
 
 ### Mochi Health
 
-Senior Software Engineer, Clinical Operations  
-December 2024 to present
+Senior Full-Stack Engineer
+December 2024 to April 2026
 
-Focus:
+Impact:
 
-- Clinical operations tools.
-- Provider workflows.
-- License-expiry redesign.
-- Credentialing workflows.
-- Admin dashboards.
-- Internal systems.
+- Led engineering for Clinical Operations and contributed to product discovery, improving onboarding, search, and core workflows used by nearly 1,000 providers supporting care for 200K+ patients.
+- Owned the product and engineering partnership with Insurance to build a credentialing system, improving speed and data consistency while migrating hundreds of thousands of records.
+- Built and launched the Collaborating Physicians product, enabling physicians to supervise multiple nurse practitioners and expanding care capacity across hundreds of providers in the United States.
+- Introduced PostHog, FullStory, and Cohere to analyze usage and user pain points, supporting data-driven product decisions and A/B testing.
 
 ### Pulley
 
 Senior Full-Stack Engineer  
 December 2020 to October 2024
 
-Focus:
+Impact:
 
-- Valuation platform.
-- Offer Letter Builder.
-- Communications Hub.
-- Equity and token valuation workflows.
-- Startup product engineering.
+- Owned the Communications Hub from concept through launch, replacing email-based workflows with investor updates connected to company data for more consistent and transparent communication.
+- Led frontend development of the Valuation Platform, streamlining analyst workflows to reduce turnaround from days to about two hours and support 1,800+ valuations in its first year.
+- Built V1 of the Offer Letter Builder as the sole engineer, partnering with product and design from scoping through launch; it became a widely used product with thousands of offer letters sent.
+- Helped shape multiple 0-to-1 products, working closely with product and design from early scoping through launch and iteration.
 
-### Zoho
+### Zoho Corporation
 
-Member Technical Staff / Software Engineer  
-2017 to 2020
+Software Engineer
+May 2017 to December 2020
 
-Focus:
+Impact:
 
-- Graph visualization.
-- Internal Q&A systems.
-- Frontend product engineering.
-- AI-enabled UI builder work.
+- Helped take a no-code website-development product from whiteboard concept to working V0, leading a team of 4-5 engineers and helping accelerate website-development workflows.
+- Built an interactive graph visualization library for an internal research product, developing custom layout and collision algorithms optimized to handle 7,000+ nodes.
 
 ## Education
 
 ### SRM Institute of Science and Technology
 
-Bachelor's degree in Computer Science / Software Engineering  
-July 2013 to June 2017
+Bachelor of Technology in Software Engineering
+Graduated: 2017
 
 Activities and projects:
 
@@ -79,6 +74,20 @@ Activities and projects:
 - Research intern, DRDO CAIR.
 
 ## Skills
+
+Product Management:
+
+- Discovery.
+- User research.
+- Requirements.
+- Prioritization.
+- Roadmapping.
+- Strategy.
+- Analytics.
+- Prototyping.
+- Stakeholder management.
+- Cross-functional collaboration.
+- 0-to-1 development.
 
 Languages:
 
@@ -108,28 +117,36 @@ AI:
 
 - RAG.
 - AI agents.
-- OpenAI API.
+- LLM APIs.
 - Function/tool calling.
-- LLM evaluation.
+- Harness engineering.
+- Claude.
+- Codex.
+- Grok.
 
 Testing:
 
 - Playwright.
 
-## Avoid overclaiming
+## Positioning guardrails
 
 Do not say:
 
+- Ankit has already held the formal title of Product Manager.
 - Ankit is a machine learning researcher.
 - Ankit is an AI scientist.
 - Ankit has deep ML production experience unless the knowledge base is updated with evidence.
 
 Better wording:
 
-- Ankit is an AI Product Engineer building practical AI-enabled systems.
-- Ankit combines full-stack product engineering with applied AI direction.
-- Ankit is growing into applied AI product engineering from a strong senior engineering base.
+- Ankit is moving into product management after repeatedly owning discovery, scoping, cross-functional delivery, and iteration inside senior engineering roles.
+- Ankit is a product manager with an engineering edge.
+- Ankit combines product judgment, full-stack depth, startup execution, and applied-AI direction.
 
-## Do not mention future programs
+## Contact
 
-Do not mention future, not-yet-started education programs in the public portfolio knowledge base unless Ankit explicitly adds them later.
+- Email: ankitkumarojha2@gmail.com.
+- Portfolio: ankojh.com.
+- LinkedIn: linkedin.com/in/ankojh.
+
+Do not expose Ankit's phone number through the assistant or public resume.

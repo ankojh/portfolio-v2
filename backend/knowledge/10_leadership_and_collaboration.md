@@ -10,7 +10,7 @@ privacy: public_portfolio_safe
 
 ## Leadership style
 
-Ankit's leadership style is ownership through execution. He is not only interested in managing people. He is interested in owning product areas, improving systems, and helping teams move faster.
+Ankit's leadership style is ownership through alignment and execution. He brings user, business, design, operations, and engineering perspectives together, then stays accountable through launch and iteration.
 
 ## Collaboration style
 
@@ -32,18 +32,14 @@ Ankit has worked with:
 - Can own features end to end.
 - Can work in remote and cross-time-zone environments.
 
-## Remote work
-
-Ankit has worked remotely from India with US time-zone overlap, including PST overlap. This is useful for US-based startups that hire internationally or need flexible collaboration.
-
 ## Cross-functional examples
 
-At Pulley, valuation and offer letter workflows required understanding business users and product requirements. At Mochi Health, clinical operations systems require collaboration with operations teams and careful workflow design.
+At Pulley, Ankit partnered with product and design from early scoping through launch across valuation, offer-letter, and communications products. At Mochi Health, he partnered with Clinical Operations and Insurance, introduced analytics tools, and used behavior and pain-point data to guide decisions.
 
 ## Communication growth
 
-Ankit is actively improving his professional storytelling, public-facing portfolio, and product communication. This supports his direction as an AI Product Engineer and future senior technical leader.
+Ankit is formalizing his product leadership through clearer discovery, prioritization, analytics, and stakeholder communication practices.
 
 ## Best leadership pitch
 
-> Ankit leads by taking ownership of ambiguous product areas, aligning with stakeholders, and turning messy workflows into shipped systems.
+> Ankit leads by turning ambiguous user and business problems into aligned priorities, clear requirements, and shipped products with measurable outcomes.

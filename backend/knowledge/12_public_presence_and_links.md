@@ -55,6 +55,7 @@ Use links like:
 - Portfolio: `ankojh.com`.
 - GitHub: `github.com/ankojh`.
 - LinkedIn: `linkedin.com/in/ankojh`.
+- Email: `ankitkumarojha2@gmail.com`.
 
 ## Privacy rule
 

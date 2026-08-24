@@ -1,16 +1,16 @@
 ---
-title: Product Engineering Style
-summary: How Ankit thinks about product, users, execution, and tradeoffs.
-tags: product_engineering, work_style, execution
-audience: Founders, product managers, engineering managers
+title: Product Management Style
+summary: How Ankit approaches discovery, prioritization, execution, and tradeoffs.
+tags: product_management, discovery, prioritization, execution
+audience: Founders, product leaders, engineering managers
 privacy: public_portfolio_safe
 ---
 
-# Product Engineering Style
+# Product Management Style
 
 ## Summary
 
-Ankit's strongest style is product-minded engineering. He cares about whether the system solves the real workflow, not just whether the ticket is complete.
+Ankit's product style is grounded, technical, and workflow-oriented. He starts with the user and operational problem, makes requirements and tradeoffs explicit, and stays close to delivery and measurement.
 
 ## How Ankit approaches problems
 
@@ -18,6 +18,8 @@ Ankit usually works by understanding:
 
 - Who uses the feature.
 - What workflow they are trying to complete.
+- What evidence reveals the pain point.
+- Which outcome should change.
 - What can go wrong.
 - Which states need to be visible.
 - Which actions need to be reversible.
@@ -27,12 +29,15 @@ Ankit usually works by understanding:
 ## Product strengths
 
 - Turning ambiguous workflow problems into product behavior.
+- Product discovery and user research.
+- Requirements definition and prioritization.
+- Using analytics and qualitative signals to guide iteration.
 - Building internal tools that non-engineering teams can use.
 - Thinking about edge cases and operational mistakes.
 - Creating UI that reflects real user workflows.
 - Collaborating with product, design, operations, and customer-facing teams.
 
-## Engineering strengths
+## Technical advantage
 
 - Strong React and TypeScript implementation.
 - Practical backend work.
@@ -45,18 +50,18 @@ Ankit usually works by understanding:
 
 Ankit prefers simple, reliable systems over over-engineered architecture. For example, for his portfolio, he prefers React + FastAPI + PostgreSQL over adding unnecessary complexity too early.
 
-## Best founder-facing description
+## Best hiring-manager description
 
-> Ankit is the kind of engineer who can take a messy workflow, ask the right product questions, build the system, and keep improving it after real users touch it.
+> Ankit is the kind of product manager who can take a messy workflow, find the real user problem, align stakeholders around a practical priority, and work with engineering through launch and iteration.
 
 ## What Ankit is still growing
 
-Ankit is actively growing in:
+Ankit is actively deepening:
 
-- AI engineering depth.
 - Product strategy.
-- Leadership communication.
+- Market and customer research.
+- Product leadership communication.
 - Business thinking.
-- More structured system design storytelling.
+- Applied-AI product judgment.
 
-This growth direction is one reason he is positioning himself as an AI Product Engineer: someone who can connect product judgment, full-stack execution, and practical AI systems.
+His repeated product ownership inside engineering roles supports this move from engineering-led execution into formal product management.

@@ -10,7 +10,7 @@ privacy: public_portfolio_safe
 
 ## Why should a founder care about Ankit?
 
-Ankit has experience turning ambiguous workflows into shipped product systems. He has worked at startups, owned projects, collaborated cross-functionally, and built internal/product tools that support real business operations.
+Ankit has experience turning ambiguous workflows into shipped product systems. As an early engineer at Pulley, he shaped 0-to-1 products, worked across functions, and stayed accountable from early scope through launch and iteration.
 
 ## What kind of startup problems can Ankit help with?
 
@@ -31,7 +31,7 @@ Yes. The clearest example is his sole-engineer ownership of Pulley's Offer Lette
 
 ## What is his risk?
 
-Ankit should be positioned honestly. He is not a deep infrastructure engineer or ML researcher. His strongest value is product engineering, workflow systems, frontend-heavy full-stack work, and practical AI-enabled product building.
+Ankit should be positioned honestly. He has not yet held a formal Product Manager title and is not a deep infrastructure engineer or ML researcher. His strongest value is technically fluent product leadership for workflow-heavy, 0-to-1, and applied-AI products.
 
 ## What makes him better than a normal frontend engineer?
 
@@ -45,12 +45,13 @@ He can build user-facing product experiences and understands how users interact 
 
 Best fits:
 
-- Founding engineer.
+- Product manager.
+- Technical product manager.
+- AI product manager.
+- Platform or internal-tools product manager.
+- Product lead for a workflow-heavy startup.
+- Product engineer.
 - Senior product engineer.
-- Senior full-stack engineer.
-- Internal tools/platform engineer.
-- AI product engineer.
-- Workflow automation engineer.
 
 ## Where would he not be the best fit?
 
@@ -63,4 +64,4 @@ Less ideal fits:
 
 ## Founder summary
 
-> Hire Ankit when you need a senior engineer who can understand messy product workflows, ship full-stack features, and work closely with product and operations without needing every detail spoon-fed.
+> Hire Ankit when you need a startup product manager who can understand messy workflows, align users and stakeholders around the right problem, and partner deeply with engineering from discovery through launch.

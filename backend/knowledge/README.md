@@ -21,7 +21,7 @@ Suggested chunking:
 
 Suggested retrieval behavior:
 
-- Career questions: search experience, impact, skills, work style, AI Product Engineer positioning.
-- Founder questions: search startup_fit, product_engineering, ownership, leadership.
-- Recruiter questions: search resume_summary, skills, role_fit, AI Product Engineer positioning, education.
+- Career questions: search experience, impact, skills, product-management positioning, and technical differentiation.
+- Founder questions: search startup_fit, product_management, ownership, discovery, and leadership.
+- Recruiter questions: search resume_summary, skills, role_fit, product-management transition, and education.
 - Personal questions: search personal_story, interests, communication_style.

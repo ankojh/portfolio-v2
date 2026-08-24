@@ -10,11 +10,11 @@ privacy: public_portfolio_safe
 
 ## Role
 
-Ankit works as a Senior Software Engineer on clinical operations systems at Mochi Health.
+Ankit worked as a Senior Full-Stack Engineer at Mochi Health from December 2024 to April 2026. He led engineering for Clinical Operations and contributed to product discovery.
 
 ## Work theme
 
-The core theme is building systems that help healthcare operations teams work more reliably and efficiently.
+The core theme was improving healthcare operations through discovery, stakeholder partnership, product delivery, and data-informed iteration.
 
 This includes:
 
@@ -26,6 +26,8 @@ This includes:
 - Analytics and workflow visibility.
 - Admin dashboard migration.
 
+These workflows served nearly 1,000 providers supporting care for 200K+ patients.
+
 ## Provider license-expiry redesign
 
 One important project involved redesigning provider license-expiry workflows.
@@ -36,9 +38,13 @@ Good way to describe the project:
 
 > Redesigned the provider license-expiry workflow to make license state more accurate, reversible, and operationally manageable. The work reduced a recurring class of support/ops tickets and helped the team respond faster during transition.
 
+## Insurance credentialing
+
+Ankit owned the product and engineering partnership with Insurance to build a credentialing system. The work improved speed and data consistency while migrating hundreds of thousands of records.
+
 ## Collaborating physician workflows
 
-Ankit worked on collaborating physician features. These workflows matter because healthcare operations often need clear relationships, permissions, states, and auditability.
+Ankit built and launched the Collaborating Physicians product, enabling physicians to supervise multiple nurse practitioners and expanding care capacity across hundreds of providers in the United States.
 
 Relevant engineering signals:
 
@@ -65,6 +71,10 @@ Likely stack areas:
 - PostHog.
 - FullStory.
 
+## Product analytics
+
+Ankit introduced PostHog, FullStory, and Cohere to analyze usage and user pain points. These tools supported data-driven product decisions and A/B testing.
+
 ## Founder/recruiter takeaway
 
-Mochi Health shows that Ankit can work on serious operational software where correctness, clarity, and workflow reliability matter. This is stronger than just building UI. It shows product judgment in systems used by real teams every day.
+Mochi Health is Ankit's clearest evidence of product-management work inside an engineering role: discovery, stakeholder partnership, requirements, product analytics, launch ownership, and measurable operational impact.

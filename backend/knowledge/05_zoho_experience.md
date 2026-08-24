@@ -16,9 +16,15 @@ Ankit worked at Zoho from 2017 to 2020 as a software engineer / member technical
 
 Zoho gave Ankit a strong engineering foundation. He worked on product features, frontend systems, visualization-heavy UI, and internal tools.
 
+## No-code website builder
+
+Ankit helped take a no-code website-development product from whiteboard concept to a working V0. He led a team of 4-5 engineers and helped accelerate website-development workflows.
+
+This is an early example of 0-to-1 product execution and technical leadership.
+
 ## Graph visualization library
 
-Ankit worked on a graph visualization library. This is useful because graph-heavy products require careful UI thinking, performance awareness, and data representation skill.
+Ankit built an interactive graph visualization library for an internal research product. He developed custom layout and collision algorithms optimized to handle more than 7,000 nodes.
 
 Signals:
 
@@ -27,14 +33,6 @@ Signals:
 - Interaction design.
 - Reusable component thinking.
 
-## Internal Q&A tool
-
-Ankit worked on an internal Q&A tool. This is relevant to his current `Ask Ankit` direction because it shows an early interest in knowledge systems, search, and internal information retrieval.
-
-## AI-enabled UI builder
-
-Ankit worked on or around an AI-enabled UI builder concept. This gives early signal that he has been interested in AI-assisted product experiences before the recent AI boom.
-
 ## Recruiter takeaway
 
-Zoho shows Ankit's base as a strong product engineer with frontend depth. It also explains why he later became effective at startup product engineering, internal tools, and workflow systems.
+Zoho shows Ankit's early ability to move from concept to product, lead a small engineering team, and solve technically complex visualization problems. It is the foundation for his later cross-functional product ownership.

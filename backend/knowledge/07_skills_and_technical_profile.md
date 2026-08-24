@@ -1,16 +1,29 @@
 ---
-title: Skills and Technical Profile
-summary: Technical skills, stack, and engineering strengths.
-tags: skills, technical, stack, engineering
-audience: Recruiters, engineering managers
+title: Product Management and Technical Profile
+summary: Product-management skills and the technical depth that differentiates Ankit.
+tags: skills, product_management, technical, applied_ai
+audience: Recruiters, product leaders, hiring managers
 privacy: public_portfolio_safe
 ---
 
 # Skills and Technical Profile
 
-## Core technical identity
+## Core identity
 
-Ankit is a full-stack engineer with frontend depth and strong product workflow experience.
+Ankit is a product-focused builder moving into product management after 8+ years in full-stack engineering. His differentiator is the ability to connect user needs, business priorities, and technical feasibility.
+
+## Product management
+
+- Product discovery.
+- User research.
+- Requirements definition.
+- Prioritization and roadmapping.
+- Product strategy.
+- Product analytics and A/B testing.
+- Prototyping.
+- Stakeholder management.
+- Cross-functional collaboration.
+- 0-to-1 product development.
 
 ## Languages
 
@@ -80,17 +93,16 @@ Backend strengths:
 - pgvector interest for RAG.
 - MongoDB exposure.
 
-## AI and LLM systems
+## Applied AI
 
-Ankit is building practical AI knowledge around:
+Ankit is building practical AI product knowledge around:
 
 - RAG.
 - Embeddings.
-- OpenAI API.
+- LLM APIs.
 - Tool/function calling.
-- AI agents.
-- LLM evaluation.
-- Portfolio assistant design.
+- Harness engineering.
+- Claude, Codex, and Grok.
 
 ## DevOps and infrastructure
 
@@ -113,6 +125,6 @@ Relevant tools and exposure:
 - Workflow edge cases.
 - Operational correctness.
 
-## Best technical pitch
+## Best product pitch
 
-Ankit is strongest when building product systems that require frontend clarity, backend workflow logic, and practical product judgment. He is not trying to be only a UI specialist or only a backend infrastructure engineer.
+Ankit is strongest in technical product roles where the PM must understand complex workflows, align stakeholders, make data-informed decisions, and work credibly with engineering. His stack is evidence of technical fluency, not the lead story.

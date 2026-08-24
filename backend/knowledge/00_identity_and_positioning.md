@@ -1,7 +1,7 @@
 ---
 title: Identity and Positioning
-summary: High-level professional identity and positioning for Ankit Ojha.
-tags: identity, positioning, ai_product_engineer, recruiter
+summary: High-level professional identity and product-management positioning for Ankit Ojha.
+tags: identity, positioning, product_management, applied_ai, recruiter
 audience: Recruiters, founders, hiring managers
 privacy: public_portfolio_safe
 ---
@@ -10,40 +10,41 @@ privacy: public_portfolio_safe
 
 ## One-line identity
 
-Ankit Ojha is an AI Product Engineer with 8+ years of full-stack product engineering experience across startups, healthcare operations, equity management, internal platforms, and developer-facing tools.
+Ankit Ojha is a product manager with 8+ years of full-stack and early-stage experience taking products from ambiguous idea to launch across healthcare, fintech, and enterprise software.
 
 ## Preferred positioning
 
 Ankit should be positioned as:
 
-> AI Product Engineer with 8+ years of full-stack experience, strong product ownership, startup execution, and practical applied AI direction.
+> Product manager with engineering depth: experienced in discovery, prioritization, analytics, 0-to-1 execution, and the hands-on technical work required to ship in startups.
 
-This is better than calling him only a frontend engineer, only a backend engineer, or only an AI engineer. His strongest signal is product-minded engineering: building real workflows, owning product areas end to end, and now applying AI where it improves user experience or team operations.
+Do not imply that Ankit has already held the formal title of Product Manager. His professional titles have been in software engineering. The credible story is that he repeatedly performed product-management work while owning 0-to-1 and workflow-heavy products, and is now intentionally moving toward product leadership.
 
 ## What makes Ankit different
 
 Ankit combines four useful traits:
 
-1. He can build full-stack systems, not just isolated UI screens.
-2. He has worked in startup environments where ambiguity, speed, and ownership matter.
-3. He understands internal operations tools, not only customer-facing apps.
-4. He is building toward practical AI products, not AI demos for their own sake.
+1. He can discover and frame ambiguous user and business problems.
+2. He has shipped 0-to-1 products in startup environments where speed and ownership matter.
+3. He understands internal operations tools and customer-facing products.
+4. He can evaluate feasibility and partner deeply with engineering because he has built full-stack systems himself.
+5. He is developing applied-AI product judgment without presenting himself as an ML researcher.
 
 ## Best audiences
 
 Ankit is most relevant to:
 
-- Early-stage founders who need senior engineers who can own product areas.
-- Product engineering teams building workflow-heavy SaaS products.
-- Teams adding AI to internal tools, operations platforms, search, or user-facing workflows.
-- Recruiters looking for senior full-stack engineers with startup experience and applied AI product direction.
+- Product leaders looking for technically fluent PMs.
+- Early-stage founders who need someone who can move between discovery, strategy, and execution.
+- Teams building workflow-heavy SaaS, healthcare operations, fintech, or applied-AI products.
+- Recruiters hiring technical product managers, startup product leads, or product engineers with strong ownership.
 
 ## Short bio
 
-Ankit Ojha is an AI Product Engineer from India with 8+ years of experience building full-stack product systems. He has worked at Pulley, Mochi Health, and Zoho, with strong experience in React, TypeScript, Node.js, PostgreSQL, internal tools, workflow automation, and product-led engineering. His current focus is practical AI product engineering: RAG systems, tool/function calling, AI-assisted workflows, and portfolio-scale AI experiences.
+Ankit Ojha is a product-focused builder with 8+ years of experience launching products across healthcare, fintech, and enterprise software. At Mochi Health, Pulley, and Zoho, he worked across discovery, requirements, cross-functional execution, analytics, and hands-on full-stack delivery. His current focus is product management, applied AI, and technically complex product workflows.
 
 ## Long bio
 
-Ankit Ojha is an AI Product Engineer and senior full-stack software engineer with 8+ years of experience building product systems across startups and technology companies. At Pulley, he worked as an early engineer on valuation, equity, communication, and offer letter workflows. At Mochi Health, he has worked on clinical operations systems, provider workflows, credentialing tools, and internal platforms. Earlier at Zoho, he built frontend-heavy products including graph visualization systems and internal applications.
+Ankit Ojha is a product-focused technology leader and senior full-stack engineer with 8+ years of experience taking products from discovery through launch and iteration. At Mochi Health, he led engineering and contributed to discovery for Clinical Operations workflows used by nearly 1,000 providers supporting care for 200K+ patients, partnered with Insurance on a credentialing system, launched a Collaborating Physicians product, and introduced analytics tools to support product decisions. At Pulley, he helped shape multiple 0-to-1 products, including the Communications Hub, Valuation Platform, and Offer Letter Builder. Earlier at Zoho, he helped move a no-code website builder from whiteboard to V0 and built a graph visualization library supporting 7,000+ nodes.
 
-His work usually sits at the intersection of engineering, product, and operations. He is comfortable taking ambiguous requirements, shaping them into workflows, and building reliable systems that users can depend on. His current direction is toward AI-enabled product engineering, with a portfolio project called `Ask Ankit` that uses structured knowledge and retrieval to help recruiters and founders understand his background interactively.
+His work sits at the intersection of product, engineering, and operations. He is comfortable researching user pain points, defining requirements, prioritizing work, aligning stakeholders, and staying close enough to implementation to make grounded tradeoffs. His current direction is product management for technical, workflow-heavy, and applied-AI products.

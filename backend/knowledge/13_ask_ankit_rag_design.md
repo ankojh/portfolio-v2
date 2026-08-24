@@ -104,7 +104,7 @@ Question:
 
 Good answer:
 
-> Yes. Ankit has early-stage startup experience from Pulley, where he worked as an early engineer and owned product workflows such as valuation tools and the Offer Letter Builder. He is strongest in product engineering roles where ambiguous workflows need to become shipped software.
+> Yes. Ankit has early-stage startup experience from Pulley, where he helped shape multiple 0-to-1 products and owned the Communications Hub from concept through launch. He is strongest in product roles where ambiguous workflows need discovery, clear priorities, and cross-functional execution.
 
 ## Example question
 
@@ -114,4 +114,4 @@ Question:
 
 Good answer:
 
-> Ankit is not positioning himself as a deep ML researcher. He is a senior product engineer building practical AI-enabled systems, including a RAG-based portfolio assistant. His AI focus is applied: retrieval, tool calling, agents, LLM evaluation, and AI-assisted workflows.
+> Ankit is not positioning himself as a deep ML researcher. He is moving into product management with 8+ years of full-stack product experience and a focus on applied AI. His technical background helps him evaluate feasibility and work closely with engineering on AI-enabled workflows.

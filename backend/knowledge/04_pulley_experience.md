@@ -24,16 +24,16 @@ Ankit worked on Pulley's valuation platform, including 409A and token valuation 
 
 The product involved complex analyst workflows, structured inputs, review states, document generation, and repeatable internal processes.
 
-Strong signals:
+Outcome and signals:
 
-- Built workflow-heavy product surfaces.
-- Helped reduce analyst manual work.
-- Worked with complex business logic.
-- Built systems that supported scale across many valuations.
+- Led frontend development of the platform.
+- Streamlined analyst workflows so turnaround fell from days to about two hours.
+- Supported more than 1,800 valuations in the first year.
+- Worked with complex business logic and cross-functional stakeholders.
 
 Good project phrasing:
 
-> Built and improved valuation workflows used by analysts to complete equity and token valuation work faster, with better structure and fewer manual steps.
+> Led frontend development of the Valuation Platform, streamlining analyst workflows to reduce turnaround from days to about two hours and support more than 1,800 valuations in its first year.
 
 ## Offer Letter Builder
 
@@ -43,7 +43,7 @@ This is a strong founder-facing story because it shows end-to-end ownership.
 
 Useful framing:
 
-> Owned the Offer Letter Builder as the sole engineer, translating product requirements into a usable workflow for generating and managing offer letters inside the equity platform.
+> Built V1 of the Offer Letter Builder as the sole engineer, partnering with product and design from scoping through launch; it became a widely used product with thousands of offer letters sent.
 
 Signals:
 
@@ -55,9 +55,7 @@ Signals:
 
 ## Communications Hub
 
-Ankit contributed to Pulley's communications workflows.
-
-This likely involved user messaging, templates, notification flows, and structured communication between companies and stakeholders.
+Ankit owned the Communications Hub from concept through launch. The product replaced email-based workflows with investor updates connected to company data, making communication more consistent and transparent.
 
 ## Backend and shared systems
 
@@ -74,4 +72,4 @@ Relevant stack signals:
 
 ## Founder takeaway
 
-Pulley is one of the strongest parts of Ankit's story. It shows he can operate in a startup, own ambiguous product areas, and build systems that matter to business workflows. Founders should see him as a product engineer who can ship meaningful product, not only implement tickets.
+Pulley is one of the strongest parts of Ankit's product-management story. It shows repeated 0-to-1 ownership, partnership with product and design, comfort with ambiguity, and the ability to connect workflow changes to adoption and turnaround time.

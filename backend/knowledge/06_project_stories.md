@@ -46,7 +46,7 @@ He built product surfaces, helped model workflows, collaborated with cross-funct
 
 ### Result
 
-The platform supported a large volume of valuation work and helped reduce manual analyst effort.
+The platform reduced valuation turnaround from days to about two hours and supported more than 1,800 valuations in its first year.
 
 ### Best interview angle
 
@@ -64,11 +64,11 @@ Ankit owned Pulley's Offer Letter Builder as the sole engineer.
 
 ### Action
 
-He worked across requirements, frontend, backend, edge cases, and user experience.
+He partnered with product and design from scoping through launch while owning the engineering work end to end.
 
 ### Result
 
-The project became a clear end-to-end ownership example.
+The product became widely used, with thousands of offer letters sent.
 
 ### Best interview angle
 
@@ -93,6 +93,7 @@ The system uses topic-specific Markdown files, embeddings, retrieval, and answer
 Recruiters and founders can ask focused questions like:
 
 - What kind of engineer is Ankit?
+- Why is Ankit moving into product management?
 - What did Ankit build at Pulley?
 - Is Ankit a fit for an early-stage startup?
 - What is Ankit learning in AI?

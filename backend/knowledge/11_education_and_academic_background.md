@@ -1,7 +1,7 @@
 ---
 title: Education and Academic Background
-summary: Academic background, SRM, DRDO, and student engineering work.
-tags: education, srm, drdo, academic, student_projects
+summary: Ankit's software-engineering foundation at SRM and applied student projects.
+tags: education, srm, drdo, engineering, student_projects
 audience: Recruiters, founders, hiring managers
 privacy: public_portfolio_safe
 ---
@@ -10,7 +10,7 @@ privacy: public_portfolio_safe
 
 ## SRM Institute of Science and Technology
 
-Ankit completed his Bachelor's degree in Computer Science / Software Engineering at SRM Institute of Science and Technology.
+Ankit completed a Bachelor of Technology in Software Engineering at SRM Institute of Science and Technology.
 
 Approximate period: July 2013 to June 2017.
 
@@ -50,8 +50,8 @@ Good public-facing phrasing:
 
 ## Academic story
 
-Ankit's education shows technical curiosity beyond standard coursework: robotics, AI, satellites, solar racing, and applied software projects. This background supports his current direction as an AI Product Engineer because he has long been interested in practical technology, not just resume keywords.
+Ankit's education shows an engineering foundation shaped by robotics, AI, satellites, solar racing, and applied software projects.
 
 ## RAG answer guidance
 
-If asked about education, answer with SRM, DRDO CAIR, SRMSAT-2, and Etros Solar Racing. Do not mention future or not-yet-started programs unless Ankit explicitly adds them to the public portfolio later.
+If asked about education, mention the BTech in Software Engineering at SRM and relevant student work when useful.

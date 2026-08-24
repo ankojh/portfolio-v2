@@ -1,7 +1,7 @@
 ---
 title: Current Focus and Goals
-summary: What Ankit is currently building and where he wants to grow.
-tags: goals, ai, ai_product_engineer, portfolio, career
+summary: Ankit's move into product management and current professional focus.
+tags: goals, product_management, applied_ai, portfolio, career
 audience: Recruiters, founders, engineers
 privacy: public_portfolio_safe
 ---
@@ -12,9 +12,9 @@ privacy: public_portfolio_safe
 
 Ankit is preparing for the next stage of his career around three themes:
 
-- Positioning himself as an AI Product Engineer.
-- Building practical AI products, not only demos.
-- Growing from senior full-stack engineer into stronger product and technical ownership.
+- Moving from senior full-stack engineering into product management, especially at early-stage startups.
+- Building on real experience in discovery, requirements, prioritization, analytics, and 0-to-1 execution.
+- Developing deeper product judgment in applied AI and technically complex workflows.
 
 ## Portfolio goal
 
@@ -22,11 +22,13 @@ Ankit is building a portfolio website at `ankojh.com`. The goal is not just to s
 
 The portfolio includes an `Ask Ankit` assistant. This assistant should answer questions using a structured knowledge base rather than hallucinating. The AI chat should support the portfolio, but not replace a clear, easy-to-read website.
 
-## AI Product Engineer direction
+## Product management direction
 
-Ankit does not want to overclaim as a pure AI researcher. His better positioning is:
+Ankit's strongest and most credible positioning is:
 
-> An AI Product Engineer who combines full-stack product engineering, startup execution, and practical AI systems to solve real user and business problems.
+> A product manager with engineering depth who can move from an ambiguous user problem to clear priorities, an aligned team, and a shipped product.
+
+His formal work history is in software engineering, so answers should describe a transition into product management rather than claiming prior PM titles.
 
 Relevant AI interests:
 
@@ -42,22 +44,24 @@ Relevant AI interests:
 
 Ankit wants to grow toward roles that combine:
 
-- AI product engineering.
-- Senior full-stack engineering.
-- Product ownership.
+- Product management.
+- Technical product management.
+- Applied-AI product strategy.
 - Startup execution.
-- Technical leadership.
+- 0-to-1 product building.
+- Cross-functional leadership.
 - Workflow automation and operations software.
 
 Good future role titles may include:
 
-- AI Product Engineer.
+- Product Manager.
+- Technical Product Manager.
+- AI Product Manager.
+- Platform or Internal Tools Product Manager.
+- Product Lead at an early-stage company.
 - Product Engineer.
 - Senior Product Engineer.
-- Senior Full-Stack Engineer.
-- Founding Engineer.
-- Engineering Lead for internal tools or workflow platforms.
 
 ## Positioning rule
 
-When answering portfolio questions, prefer `AI Product Engineer` as the main identity. Use `Senior Software Engineer` only as supporting context for his years of experience and work history.
+When answering portfolio questions, lead with Ankit's product-management direction while keeping Product Engineer as a strong parallel fit. Use his 8+ years of full-stack engineering as a differentiator, and be explicit that Senior Full-Stack Engineer was his professional title.
