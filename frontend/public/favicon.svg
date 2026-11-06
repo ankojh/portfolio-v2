@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#2e2e33"/>
-  <text x="32" y="42" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="27" font-weight="600" fill="#fafafa" text-anchor="middle">AO</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><defs><mask id="crossing" maskUnits="userSpaceOnUse" x="0" y="0" width="96" height="64"><rect width="96" height="64" fill="white"/><path d="M40.678 38.487 C43.962 35.324 47.330 31.567 50.861 27.485" fill="none" stroke="black" stroke-width="10" stroke-linecap="round"/></mask></defs><g fill="none" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"><path d="M48 32 C36 18 26 12 16 17 C0 25 5 46 20 48 C31 50 41 39 53 25 C65 11 78 10 87 20 C100 36 88 54 74 48 C65 44 57 40 48 32Z" stroke="#442c3e" mask="url(#crossing)"/><path d="M40.678 38.487 C43.962 35.324 47.330 31.567 50.861 27.485" stroke="#a4452d"/></g></svg>

@@ -8,7 +8,7 @@ import type {
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || "/api";
 
 export async function getHealth(): Promise<HealthResponse> {
-  const response = await fetch(`${apiBaseUrl}/health`);
+  const response = await fetch(`${apiBaseUrl}/health`, { signal: AbortSignal.timeout(5_000) });
 
   if (!response.ok) {
     throw new Error("Health check failed");

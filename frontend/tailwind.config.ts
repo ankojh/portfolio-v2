@@ -13,7 +13,27 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['"Instrument Sans"', "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        serif: ["Newsreader", "Georgia", "serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+      },
       colors: {
+        // Paper, plum ink, persimmon accents.
+        ground: "#FAF7F2",
+        paper: "#FFFDFA",
+        sand: "#F1EBE6",
+        clay: "#EEE5DF",
+        stone: "#E8DCD4",
+        ink: "#382833",
+        body: "#62545B",
+        quiet: "#77676E",
+        rule: "#DFD3D2",
+        terra: {
+          DEFAULT: "#A4452D",
+          deep: "#763022",
+          soft: "#F6E7DE",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -52,6 +72,12 @@ const config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      maxWidth: {
+        site: "1240px",
+      },
+      boxShadow: {
+        ui: "0 1px 2px rgba(70,45,20,.06), 0 22px 44px -18px rgba(70,45,20,.24)",
       },
     },
   },
