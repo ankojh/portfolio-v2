@@ -21,14 +21,14 @@ function ProjectFacts({ project }: { project: Project }) {
     ["Product question", project.productQuestion],
     ["Principle", project.principle],
     [project.slug === "heads-down" ? "Evidence" : "What exists", project.evidence],
-    ["Stack", project.stack],
+    ["Built with", project.stack],
   ];
   return (
     <dl className="grid grid-cols-1 gap-x-4 gap-y-1 text-[14.5px] leading-[1.55] sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-y-2">
       {rows.map(([term, value]) => (
         <div key={term} className="contents">
           <dt className="pt-[3px] text-xs font-semibold uppercase tracking-[0.06em] text-terra">{term}</dt>
-          <dd className={cn("mb-2 text-[#3F372F] sm:mb-0", term === "Stack" && "text-quiet")}>{value}</dd>
+          <dd className={cn("mb-2 text-[#3F372F] sm:mb-0", term === "Built with" && "text-quiet")}>{value}</dd>
         </div>
       ))}
     </dl>
@@ -59,9 +59,9 @@ export function ProjectsPage() {
       <div className="flex flex-wrap items-end justify-between gap-8">
         <div className="max-w-[720px]">
           <Eyebrow>Projects · {projects.length}</Eyebrow>
-          <h1 className="display mt-[18px] text-[40px] leading-[1.05] tracking-[-0.022em] sm:text-[64px]">Things I build to learn by shipping.</h1>
+          <h1 className="display mt-[18px] text-[40px] leading-[1.05] tracking-[-0.022em] sm:text-[64px]">Product questions, tested by building.</h1>
           <p className="mt-5 text-[17px] leading-relaxed text-body sm:text-[19px]">
-            Independent products, each built to answer one product question. Each has a case study covering the decisions, tradeoffs and evidence so far.
+            Each project starts with one product question. The case studies cover who it’s for, the decisions and tradeoffs, and how much the evidence actually shows. I build them myself, which keeps the experiments cheap.
           </p>
         </div>
         <div className="flex flex-wrap gap-2" aria-label="Evidence key">

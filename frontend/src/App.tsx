@@ -12,7 +12,7 @@ import { CaseStudyPage } from "@/pages/CaseStudyPage";
 import { ProjectsPage } from "@/pages/ProjectsPage";
 
 const titles: Record<string, string> = {
-  "/": "Ankit Ojha — Product, applied AI, engineering",
+  "/": "Ankit Ojha — Product management, with engineering depth",
   "/work/heads-down": "Heads Down case study — Ankit Ojha",
   "/projects": "Projects — Ankit Ojha",
 };

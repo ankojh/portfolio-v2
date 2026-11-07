@@ -469,34 +469,40 @@
 /* Expanded product notes: shared framing, individual decisions. */
 .work-section { padding-bottom: 64px; }
 .feature-case-link { grid-column: 1/-1; padding: 18px 36px; border-top: 1px solid #dfd3d2; background: #f6eee8; font-size: 13px; }
-.product-flow { height: 100%; display: flex; align-items: center; padding: 25px; background: #eee3df; }
-.product-flow > div { width: 100%; }
-.flow-label { font: 10px/1.4 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .07em; color: #865166; }
-.product-flow h3 { max-width: 330px; margin-top: 13px; font: 29px/1.05 Newsreader, Georgia, serif; letter-spacing: -.025em; color: #442c3e; }
-.flow-stages { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 23px; }
-.flow-stages > div { position: relative; border-top: 1px solid #b998a5; padding-top: 8px; display: flex; flex-direction: column; gap: 6px; font-size: 11px; line-height: 1.4; color: #53404a; }
-.flow-stages > div:not(:last-child)::after { content: '→'; position: absolute; right: -9px; top: -9px; font-size: 12px; background: #eee3df; color: #865166; }
-.flow-step-number { font: 10px/1.4 ui-monospace, monospace; color: #a4452d; }
-.flow-note { margin-top: 19px; font-size: 10px; color: #77676e; }
-.product-flow--comms, .product-flow--onboarding { background: #e7e9df; }
-.product-flow--comms .flow-stages > div::after, .product-flow--onboarding .flow-stages > div::after { background: #e7e9df; }
-.product-flow--credential { background: #efe0d0; }
-.product-flow--credential .flow-stages > div::after { background: #efe0d0; }
-.product-flow--physician { background: #e5dfe9; }
-.product-flow--physician .flow-stages > div::after { background: #e5dfe9; }
-.focus-play-visual { height: 100%; padding: 23px 26px; display: flex; align-items: center; background: #442c3e; color: #fff6e9; }
-.focus-play-visual > div { width: 100%; max-width: 510px; margin: auto; }
-.focus-play-heading, .focus-play-foot { display: flex; justify-content: space-between; gap: 12px; font: 10px/1.5 ui-monospace, monospace; color: #e2c9d4; }
-.focus-play-visual p { font: 29px/1 Newsreader, Georgia, serif; margin: 14px 0; }
-.focus-play-visual em { color: #f0bc93; }
-.focus-play-track { display: flex; align-items: center; gap: 12px; }
-.focus-play-track > span { display: grid; place-items: center; border: 1px solid #866a7c; border-radius: 50%; width: 33px; height: 33px; flex-shrink: 0; }
-.focus-play-track strong { display: block; font-size: 11px; font-weight: 500; }
-.focus-play-track small { display: block; font-size: 10px; margin-top: 3px; color: #ddc6d0; }
-.focus-play-timeline { display: flex; gap: 5px; margin: 15px 0 7px; }
-.focus-play-timeline > span { height: 3px; flex: 1; background: #866a7c; }
-.focus-play-timeline > span:first-child { background: #f0bc93; flex: 1.4; }
-.focus-play-foot { font-size: 9px; }
+/* Engineering depth, framed by what it changes in product work. */
+.engineering-section { padding-top: 64px; }
+.engineering-intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 48px; align-items: end; margin-top: 25px; }
+.engineering-intro h2 { font: 400 42px/1.12 Newsreader, Georgia, serif; letter-spacing: -.025em; text-wrap: balance; }
+.engineering-intro h2 em { color: #8b4335; }
+.engineering-intro p { font-size: 15px; line-height: 1.75; color: #62545b; }
+.engineering-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; margin-top: 36px; }
+.engineering-list li { display: flex; flex-direction: column; padding-top: 16px; border-top: 3px double #d9c9bc; }
+.engineering-list li > span { font: 11px/1.5 ui-monospace, monospace; color: #a4452d; }
+.engineering-list h3 { margin-top: 10px; font-size: 18px; font-weight: 600; line-height: 1.3; letter-spacing: -.02em; }
+.engineering-list p { margin-top: 10px; font-size: 13.5px; line-height: 1.7; color: #62545b; }
+.engineering-list .engineering-product { margin-top: auto; padding-top: 14px; color: #442c3e; }
+.engineering-product strong { display: block; margin-bottom: 3px; font: 10px/1.5 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .06em; color: #a4452d; font-weight: 400; }
+.engineering-stack { margin-top: 30px; padding-top: 16px; border-top: 1px solid #dfd3d2; font-size: 13px; line-height: 1.7; color: #62545b; }
+.engineering-stack > span { margin-right: 10px; font: 10px/1.5 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .06em; color: #a4452d; }
+.experience-list .experience-title { color: #442c3e; font-weight: 500; }
+@media (max-width: 1023px) {
+  .engineering-intro { grid-template-columns: 1fr; gap: 16px; }
+  .engineering-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 32px; }
+}
+@media (max-width: 767px) {
+  .engineering-section { padding-top: 44px; }
+  .engineering-intro h2 { font-size: 34px; }
+  .engineering-list { grid-template-columns: 1fr; gap: 24px; margin-top: 26px; }
+  .engineering-list .engineering-product { margin-top: 0; }
+}
+
+/* Product visuals adapt to their panel, not the viewport. */
+.vis-root { container-type: inline-size; }
+@container (max-width: 419px) { .vis-wide { display: none !important; } }
+.experiment { grid-template-columns: 35px minmax(0, 1fr) 260px 24px; }
+/* The visual lays out at twice the thumbnail size, then scales down, so it matches the larger panels. */
+.experiment-thumb { position: relative; width: 260px; height: 162px; overflow: hidden; align-self: start; margin-top: 5px; border: 1px solid #e2d6cf; border-radius: 3px; background: #eee5df; }
+.experiment-thumb > div { position: absolute; left: 0; top: 0; width: 200%; height: 200%; transform: scale(.5); transform-origin: 0 0; }
 .desk-lead { display: grid; grid-template-columns: 1fr 1fr; margin-top: 28px; border: 1px solid #d3c5be; background: #faf7f2; }
 .desk-lead-visual { position: relative; min-height: 300px; overflow: hidden; background: #e4d7c7; }
 .desk-lead-copy { padding: 30px; }
@@ -512,6 +518,16 @@
 .project-index-table td:last-child { padding-right: 0; }
 .project-index-table td:last-child > span { white-space: normal; line-height: 1.4; }
 .index-date { display: block; font-weight: 400; font-size: 11px; color: #77676e; margin-top: 5px; }
+@media (max-width: 1023px) {
+  .experiment { grid-template-columns: 35px minmax(0, 1fr) 200px 24px; }
+  .experiment-thumb { width: 200px; height: 125px; }
+  .experiment-thumb > div { width: 260%; height: 260%; transform: scale(calc(1 / 2.6)); }
+}
+@media (max-width: 767px) {
+  .experiment { grid-template-columns: 22px minmax(0, 1fr) 20px; }
+  .experiment-thumb { grid-column: 2; grid-row: 2; width: 100%; height: auto; aspect-ratio: 16 / 10; margin-top: 4px; }
+  .experiment-thumb > div { width: 140%; height: 140%; transform: scale(calc(1 / 1.4)); }
+}
 .case-page { padding-top: 25px; padding-bottom: 75px; }
 .case-breadcrumbs { display: flex; flex-wrap: wrap; gap: 15px 30px; font-size: 12px; color: #865166; margin-bottom: 42px; }
 .case-breadcrumbs a:hover { text-decoration: underline; }
@@ -523,7 +539,6 @@
 .case-ownership { border-top: 1px solid #dfd3d2; padding-top: 18px; margin-top: 22px; }
 .case-ownership p { font-size: 13px; line-height: 1.7; color: #62545b; margin-top: 7px; }
 .case-visual { position: relative; height: 320px; overflow: hidden; background: #eee3df; border: 1px solid #dfd3d2; }
-.case-visual .product-flow h3 { font-size: 34px; }
 .case-visual > [role="img"] > [aria-hidden="true"] { max-width: 100%; }
 .case-decisions { margin-top: 60px; }
 .case-page h2 { font: 38px/1.15 Newsreader, Georgia, serif; letter-spacing: -.02em; }

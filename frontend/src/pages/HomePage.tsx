@@ -5,7 +5,7 @@ import { AskAnkit } from "@/components/AskAnkit";
 import { AoLogo, EvidenceBadge, JaliBand, PrintFlower } from "@/components/site/Brand";
 import { Link } from "@/components/site/Link";
 import { VisualPanel } from "@/components/visuals/ProductVisuals";
-import { about, education, experience, featuredCase, projects } from "@/content/site";
+import { about, education, engineeringDepth, experience, featuredCase, projects } from "@/content/site";
 import { workCases } from "@/content/caseStudies";
 import { profile } from "@/data/profile";
 
@@ -18,7 +18,7 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
         <div className="intro-main">
           <p className="section-kicker"><span className="status-dot" /> A builder’s path into product</p>
           <h1 id="intro-heading">Hi, I’m Ankit.<br />I care about<br /><WorthBuilding /></h1>
-          <p className="intro-description">Eight years building at <strong>Pulley, Mochi Health and Zoho.</strong> I’m bringing that engineering depth into product management — starting with the people, the workflow, and the problem worth solving.</p>
+          <p className="intro-description">I turn messy workflows into clear priorities and shipped products — at <strong>Pulley, Mochi Health and Zoho.</strong> I’m moving into product management, and I bring eight years as a senior full-stack engineer: I know what a decision costs to build before the team commits to it.</p>
           <div className="intro-links">
             <a href="#work" className="text-link">A few decisions I’ve helped ship <ArrowDown size={16} aria-hidden="true" /></a>
           </div>
@@ -71,7 +71,7 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
               <p className="work-problem">{item.problem}</p>
               <div className="work-decision"><span>The product bet</span><p>{item.bet}</p></div>
               <div className="work-outcome"><span>{item.outcomeLabel ?? "What changed"}</span><p>{item.outcome}</p></div>
-              <p className="work-role"><strong>My part</strong> {item.role}</p>
+              <p className="work-role"><strong>My role</strong> {item.role}</p>
               <div className="work-entry-footer">
                 {item.tags.map((tag) => <EvidenceBadge key={tag.label} kind={tag.kind} label={tag.label} />)}
                 {item.href && <Link to={item.href} className="text-link">Inside the project <ArrowUpRight size={16} aria-hidden="true" /></Link>}
@@ -97,12 +97,13 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
               <Link to={leadProject.href!} className="text-link">Inside Heads Down <ArrowUpRight size={17} aria-hidden="true" /></Link>
             </div>
           </article>
-          <p className="visual-caption">Illustrative product reconstruction</p>
+          <p className="visual-caption">Illustrative product reconstructions throughout this section</p>
           <div className="experiment-list">
             {independentProjects.map((project, index) => (
               <Link to={project.href!} className="experiment" key={project.slug}>
                 <span className="experiment-number">0{index + 2}</span>
                 <div><h3>{project.name}</h3><p>{project.pitch}</p><p className="experiment-question"><span>The question</span> {project.productQuestion}</p><span className="experiment-status">{project.status.label} · {project.meta.split(" · ").slice(1).join(" · ")}</span></div>
+                <div className="experiment-thumb" aria-hidden="true"><div><VisualPanel visual={project.homeVisual} /></div></div>
                 <ArrowUpRight size={22} className="experiment-arrow" aria-hidden="true" />
               </Link>
             ))}
@@ -110,8 +111,27 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
         </div>
       </section>
 
+      <section id="engineering" className="page-width engineering-section" aria-labelledby="engineering-heading">
+        <div className="section-index"><span>03 / The engineering underneath</span><span>{engineeringDepth.credential}</span></div>
+        <div className="engineering-intro">
+          <h2 id="engineering-heading">{engineeringDepth.headline}<br /><em>{engineeringDepth.emphasis}</em></h2>
+          <p>{engineeringDepth.body}</p>
+        </div>
+        <ol className="engineering-list">
+          {engineeringDepth.items.map((item, index) => (
+            <li key={item.title}>
+              <span>0{index + 1}</span>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+              <p className="engineering-product"><strong>For the product</strong> {item.forProduct}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="engineering-stack"><span>Day to day</span> {engineeringDepth.stack}</p>
+      </section>
+
       <section id="about" className="page-width about-section" aria-labelledby="about-heading">
-        <div className="section-index"><span>03 / The person behind the work</span></div>
+        <div className="section-index"><span>04 / The person behind the work</span></div>
         <div className="about-layout">
           <div className="about-aside"><AoLogo size={64} className="h-16 w-24 shrink-0 text-terra" /><p>{about.personal}</p></div>
           <div className="about-copy">
@@ -122,7 +142,7 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
             <a className="text-link" href={profile.resumeUrl} target="_blank" rel="noreferrer">The longer story, in my résumé <ArrowUpRight size={16} aria-hidden="true" /></a>
           </div>
           <div className="background-history">
-            <ol className="experience-list">{experience.filter((item) => item.title).map((item) => <li key={item.org}><span>{item.years}</span><h3>{item.org}</h3><p>{item.focus}</p></li>)}</ol>
+            <ol className="experience-list">{experience.filter((item) => item.title).map((item) => <li key={item.org}><span>{item.years}</span><h3>{item.org}</h3><p className="experience-title">{item.title}</p><p>{item.focus}</p></li>)}</ol>
             <section className="education-history" aria-labelledby="education-heading">
               <h3 id="education-heading">Education</h3>
               <div><span>Currently pursuing</span><h4>{education.institution}</h4><p>{education.degree} ({education.abbreviation})</p></div>

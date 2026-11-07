@@ -128,7 +128,7 @@ export const supportingCases: CaseSummary[] = [
     bet: "Treat accuracy and reversibility as the product: explicit states, clear transitions and a way back from mistakes.",
     outcome:
       "Reduced a recurring class of operational tickets, in workflows used by ~1,000 providers supporting care for 200K+ patients.",
-    role: "Led Clinical Operations engineering; contributed to discovery with operations.",
+    role: "Joined discovery with operations, then led the Clinical Operations engineering behind the redesign.",
     tags: [{ kind: "shipped", label: "Shipped · qualitative outcome" }],
     href: "/work/license-workflow",
     visual: "license-states",
@@ -341,20 +341,36 @@ export const projects: Project[] = [
 
 export const projectFilters: ProjectFilter[] = ["AI products", "Agents", "macOS", "Simulations", "Learning"];
 
-export const engineeringLeverage = [
-  {
-    title: "Feasibility while it’s still a conversation",
-    body: "I can size options while they’re being discussed, so tradeoffs get made in the room rather than a sprint later.",
-  },
-  {
-    title: "Prototypes as evidence",
-    body: "When a decision needs data rather than opinions, I build the cheapest thing that answers it — like the 48-case benchmark behind Heads Down.",
-  },
-  {
-    title: "Systems that survive operations",
-    body: "State models for clinical ops, a credentialing migration of hundreds of thousands of records, a 7,000-node graph view at Zoho.",
-  },
-];
+// Engineering is presented as product leverage: each item pairs the engineering record with what it changes in product work.
+export const engineeringDepth = {
+  credential: "Senior Full-Stack Engineer · 2017–2026",
+  headline: "Eight years of building,",
+  emphasis: "used to make better product calls.",
+  body: "My title has been engineer. It’s why I can judge feasibility while options are still on the table, spot a system’s constraints before they surprise the roadmap, and build the prototype when a decision needs evidence.",
+  items: [
+    {
+      title: "Delivery from scope to launch",
+      body: "Led frontend development of Pulley’s Valuation Platform, built V1 of the Offer Letter Builder as sole engineer, and led a 4–5 person team taking Zoho’s no-code website builder from whiteboard to V0.",
+      forProduct: "I know where a plan slips between scoping and launch.",
+    },
+    {
+      title: "Systems that survive operations",
+      body: "State models for clinical operations, a credentialing migration of hundreds of thousands of records, and a graph library with custom layout for 7,000+ nodes at Zoho.",
+      forProduct: "I plan for the mistakes and edge cases real users will hit.",
+    },
+    {
+      title: "Feasibility in the room",
+      body: "React and TypeScript frontends, Node.js and Python backends, PostgreSQL data models — enough range to size an option while it’s being discussed.",
+      forProduct: "Tradeoffs get made in the meeting, not a sprint later.",
+    },
+    {
+      title: "Prototypes and data as evidence",
+      body: "I introduced PostHog, FullStory and Cohere at Mochi Health, and built the 48-case benchmark behind Heads Down.",
+      forProduct: "Decisions rest on behavior I can check, not assumption.",
+    },
+  ],
+  stack: "React · TypeScript · Next.js · Node.js · Python / FastAPI · PostgreSQL · GraphQL · LLM APIs, retrieval and evals",
+};
 
 export const about = {
   headline: "Eight years of product work, done from the engineering seat.",
