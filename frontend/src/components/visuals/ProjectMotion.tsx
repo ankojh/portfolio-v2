@@ -11,8 +11,9 @@ type Motion = {
 };
 const MotionContext = createContext<Motion | null>(null);
 export const SCENE_DURATION = 4800;
+export const SCENE_REST = 1200;
 
-/** One scheduler for the entire page: finite scenes, never competing loops. */
+/** Visible scenes take turns, then repeat after a short still interval. */
 export function ProjectMotionProvider({ children }: { children: ReactNode }) {
   const [scenes, setScenes] = useState<Map<string, Scene>>(new Map());
   const [active, setActive] = useState<string | null>(null);
@@ -61,6 +62,12 @@ export function ProjectMotionProvider({ children }: { children: ReactNode }) {
       replayTarget.current = null;
       setScenes((current) => new Map(current).set(next[0], { ...next[1], played: true }));
       setActive(next[0]);
+    } else if ([...scenes.values()].some((scene) => scene.visible)) {
+      // A complete visible round gets a quiet beat before starting again.
+      const timer = setTimeout(() => setScenes((current) => new Map(
+        [...current].map(([id, scene]) => [id, scene.visible ? { ...scene, played: false } : scene]),
+      )), SCENE_REST);
+      return () => clearTimeout(timer);
     }
   }, [scenes, active, paused, reduced, hidden]);
   useEffect(() => {
@@ -93,7 +100,7 @@ export function MotionControls() {
   </button>;
 }
 
-export function MotionScene({ kind, children }: { kind: string; children: ReactNode }) {
+export function MotionScene({ kind, children, className = "" }: { kind: string; children: ReactNode; className?: string }) {
   const motion = useContext(MotionContext);
   const instanceId = useId();
   const id = `${instanceId}-${kind}`;
@@ -109,7 +116,7 @@ export function MotionScene({ kind, children }: { kind: string; children: ReactN
     return () => observer.disconnect();
   }, [id, visibility]);
   const playing = motion?.active === id && !motion.paused && !motion.reduced;
-  return <div ref={element} className={`motion-scene motion-scene--${kind}`} data-playing={playing ? "true" : "false"}>
+  return <div ref={element} className={`motion-scene motion-scene--${kind} ${className}`} data-playing={playing ? "true" : "false"}>
     <div className="scene-art">{children}</div>
     {motion && <button type="button" className="scene-replay" disabled={motion.reduced} onClick={() => playing ? motion.toggle() : motion.replay(id)} aria-label={playing ? "Pause all project illustrations" : `Replay ${kind.replace(/-/g, " ")} illustration`}>
       {playing ? <Pause size={12} aria-hidden="true" /> : <RotateCcw size={12} aria-hidden="true" />}

@@ -134,7 +134,7 @@ export const supportingCases: CaseSummary[] = [
     tags: [{ kind: "shipped", label: "Shipped · qualitative outcome" }],
     href: "/work/license-workflow",
     visual: "license-states",
-    visualCaption: "Illustrative state model",
+    visualCaption: "Illustrative license correction",
   },
   {
     id: "heads-down",

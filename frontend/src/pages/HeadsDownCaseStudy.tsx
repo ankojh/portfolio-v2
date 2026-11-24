@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { ArchFrame, EvidenceBadge, Eyebrow } from "@/components/site/Brand";
+import { EvidenceBadge, Eyebrow } from "@/components/site/Brand";
 import { Link } from "@/components/site/Link";
 import { VisualPanel } from "@/components/visuals/ProductVisuals";
 import { MotionControls } from "@/components/visuals/ProjectMotion";
@@ -180,12 +180,9 @@ export function HeadsDownCaseStudy() {
       </section>
 
       <figure className="mt-12 sm:mt-14">
-        <ArchFrame shape="low" className="hidden h-[600px] md:block">
+        <div className="relative h-[330px] overflow-hidden rounded-md border border-rule sm:h-[380px]">
           <VisualPanel visual="heads-down-window" />
-        </ArchFrame>
-        <ArchFrame shape="tall" className="h-[400px] md:hidden">
-          <div className="absolute inset-x-2 top-28 bottom-4"><VisualPanel visual="heads-down-mini" /></div>
-        </ArchFrame>
+        </div>
         <figcaption className="mt-3.5 text-[13px] leading-normal text-quiet">
           Illustrative composite. The lecture stays visible because it matches the task; the recommendations beside it are blurred. Tabs and the address bar always stay visible, as do controls the app exposes to accessibility.
         </figcaption>

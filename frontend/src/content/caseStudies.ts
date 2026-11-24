@@ -12,7 +12,7 @@ export const workCases: CaseSummary[] = [
     bet: "Scope a usable first version with product and design, and carry it through launch with clear end-to-end ownership.",
     outcome: "Thousands of offer letters were sent through the product after launch.",
     role: "Owned V1 as the sole engineer, partnering with product and design from scoping through launch.",
-    tags: shipped, href: "/work/offer-letter", visual: "offer-flow", visualCaption: "Conceptual offer workflow",
+    tags: shipped, href: "/work/offer-letter", visual: "offer-flow", visualCaption: "Illustrative offer letter assembly",
   },
   {
     id: "communications-hub", meta: "Pulley · Investor communication", title: "Company updates, connected to company data.",
@@ -20,7 +20,7 @@ export const workCases: CaseSummary[] = [
     bet: "Bring investor communication into the product and connect updates to the company’s data.",
     outcome: "Replaced email-based workflows with more consistent, transparent investor updates.",
     role: "Owned the Communications Hub from concept through launch.",
-    tags: shipped, href: "/work/communications-hub", visual: "comms-flow", visualCaption: "Conceptual communication workflow",
+    tags: shipped, href: "/work/communications-hub", visual: "comms-flow", visualCaption: "Illustrative investor update composition",
   },
   {
     id: "collaborating-physicians", meta: "Mochi Health · Care operations", title: "One physician. A broader care team.",
@@ -28,7 +28,7 @@ export const workCases: CaseSummary[] = [
     bet: "Make the collaborating-physician relationship a supported product workflow.",
     outcome: "Launched the Collaborating Physicians product, expanding care capacity across hundreds of providers in the United States.",
     role: "Built and launched the Collaborating Physicians product within Clinical Operations.",
-    tags: shipped, href: "/work/collaborating-physicians", visual: "physician-flow", visualCaption: "Conceptual supervision model",
+    tags: shipped, href: "/work/collaborating-physicians", visual: "physician-flow", visualCaption: "Illustrative care-team roster",
   },
   {
     id: "credentialing", meta: "Mochi Health · Insurance operations", title: "Reliable credentials, through a large migration.",
@@ -36,7 +36,7 @@ export const workCases: CaseSummary[] = [
     bet: "Own the product and engineering partnership with Insurance, treating workflow design and migration as parts of the same delivery.",
     outcome: "Improved speed and data consistency while migrating hundreds of thousands of records.",
     role: "Owned the product and engineering partnership with Insurance to build the credentialing system.",
-    tags: shipped, href: "/work/credentialing", visual: "credential-flow", visualCaption: "Conceptual migration and credentialing flow",
+    tags: shipped, href: "/work/credentialing", visual: "credential-flow", visualCaption: "Illustrative record reconciliation",
   },
   {
     id: "provider-onboarding", meta: "Mochi Health · Provider experience", title: "Bring onboarding inside the portal.",
@@ -44,7 +44,7 @@ export const workCases: CaseSummary[] = [
     bet: "Bring onboarding into the portal, including provider data collection and credentialing steps.",
     outcome: "A more streamlined onboarding workflow, with data collection and credentialing steps inside the Mochi portal.",
     role: "Built the in-portal provider onboarding workflow, including data collection and credentialing steps.",
-    tags: shipped, href: "/work/provider-onboarding", visual: "onboarding-flow", visualCaption: "Conceptual in-portal onboarding flow",
+    tags: shipped, href: "/work/provider-onboarding", visual: "onboarding-flow", visualCaption: "Illustrative provider portal",
   },
 ];
 
