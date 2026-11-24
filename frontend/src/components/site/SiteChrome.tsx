@@ -105,7 +105,7 @@ export function SiteFooter() {
       <div className="footer-craft"><JaliBand height={30} /></div>
       <div className="mx-auto max-w-site border-t border-rule" />
       <div className="mx-auto flex max-w-site flex-wrap justify-between gap-3 px-5 pb-10 pt-7 text-[13.5px] text-quiet sm:px-14">
-        <span>© {new Date().getFullYear()} Ankit Ojha · Always a work in progress.</span>
+        <span className="flex items-center gap-3"><AoLogo size={22} className="shrink-0 text-ink" /><span>© {new Date().getFullYear()} Ankit Ojha · Always a work in progress.</span></span>
         <nav aria-label="Footer" className="flex flex-wrap gap-x-4 gap-y-1">
           <Link to="/#work" className="hover:text-terra">Work</Link>
           <Link to="/projects" className="hover:text-terra">Projects</Link>

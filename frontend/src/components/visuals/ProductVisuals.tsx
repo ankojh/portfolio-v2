@@ -1,5 +1,7 @@
 import { Pause, Play } from "lucide-react";
 
+import { DorGlobe, TransformerAttention } from "@/components/visuals/NewProjectVisuals";
+import { MotionScene } from "@/components/visuals/ProjectMotion";
 import type { VisualKey } from "@/content/site";
 import { cn } from "@/lib/utils";
 
@@ -145,7 +147,7 @@ export function LicenseStates() {
 function BlurredRegion({ score, colors, height = "h-[62px]" }: { score?: string; colors: [string, string]; height?: string }) {
   return (
     <div className={cn("relative overflow-hidden rounded-lg border-[1.5px] border-dashed border-terra", height)}>
-      <div className="flex flex-col gap-1.5 p-2.5 blur-[5px]">
+      <div className="flex flex-col gap-1.5 p-2.5 blur-[5px] selective-blur">
         <div className="h-[9px] w-4/5 rounded" style={{ background: colors[0] }} />
         <div className="h-[9px] w-3/5 rounded" style={{ background: colors[1] }} />
       </div>
@@ -213,7 +215,7 @@ export function HeadsDownWindow() {
                 ["#C98E86", "#94A6B9", "#DDBF92"],
               ].map(([thumb, line1, line2]) => (
                 <div key={thumb} className="h-[74px] overflow-hidden rounded-lg bg-[#F3EBDF]">
-                  <div className="flex gap-2 p-2.5 blur-[6px]">
+                  <div className="flex gap-2 p-2.5 blur-[6px] selective-blur">
                     <span className="h-[54px] w-14 rounded-md" style={{ background: thumb }} />
                     <span className="flex flex-1 flex-col gap-1.5">
                       <span className="h-[9px] rounded" style={{ background: line1 }} />
@@ -277,7 +279,7 @@ function CheckDot({ state }: { state: "done" | "current" | "todo" }) {
 
 function RunPlan() {
   return (
-    <div className="absolute left-[22px] top-[26px] flex w-[40%] flex-col gap-2.5 text-xs">
+    <div className="scene-run-plan absolute left-[22px] top-[26px] flex w-[40%] flex-col gap-2.5 text-xs">
       <div className="label text-[10px]">Run plan</div>
       <div className="flex items-center gap-2"><CheckDot state="done" />Read the parser</div>
       <div className="flex items-center gap-2"><CheckDot state="done" />Patch edge case</div>
@@ -336,15 +338,14 @@ export function HushPlayer() {
     <div className="absolute inset-0" role="img" aria-label="Illustration: a passage being read aloud with the current three words highlighted and a compact player showing voice and speed.">
       <div aria-hidden="true">
         <p className="absolute inset-x-[26px] top-7 text-sm leading-[1.75] text-quiet">
-          The Kano model sorts features by how they affect satisfaction.{" "}
-          <span className="rounded bg-[#F3D3BF] px-[3px] py-px text-ink">Must-be features go</span> unnoticed when present but
+          <span className="reading-word word-a">Must-be</span>{" "}<span className="reading-word word-b">features</span>{" "}<span className="reading-word word-c">go</span> unnoticed when present but
           cause frustration when missing.
         </p>
         <div className="ui-card absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full py-[9px] pl-[9px] pr-3">
           <span className="flex size-8 items-center justify-center rounded-full bg-ink">
             <Pause className="size-3 fill-ground text-ground" />
           </span>
-          <span className="text-xs font-semibold">Heart</span>
+          <span className="hush-wave"><i /><i /><i /><i /><i /></span><span className="text-xs font-semibold">Heart</span>
           <span className="rounded-full bg-[#F3ECE1] px-2 py-1 text-xs">1.25×</span>
           <span className="hidden text-[11.5px] text-quiet min-[400px]:inline">Waiting for new text…</span>
         </div>
@@ -359,7 +360,7 @@ export function CouncilCard() {
       <div aria-hidden="true" className="ui-card w-[84%] p-4 sm:w-[76%]">
         <div className="label text-[10px]">Meridian Council · emergency session</div>
         <div className="mt-1.5 font-serif text-[17px]">Review the matter</div>
-        <div className="mt-3 flex gap-1.5">
+        <div className="council-choices mt-3 flex gap-1.5">
           <span className="flex-1 rounded-[7px] border border-[#CDBDA5] px-1 py-2 text-center text-[11.5px]">Rule for Aurelia</span>
           <span className="flex-1 rounded-[7px] bg-ink px-1 py-2 text-center text-[11.5px] text-ground">Middle ground</span>
           <span className="flex-1 rounded-[7px] border border-[#CDBDA5] px-1 py-2 text-center text-[11.5px]">Rule for Korsav</span>
@@ -441,8 +442,10 @@ function FocusPlayVisual() {
 }
 
 /** Renders a visual by key inside a sandstone panel of a given height. */
-export function VisualPanel({ visual, className }: { visual: VisualKey; className?: string }) {
+function VisualContent({ visual, className }: { visual: VisualKey; className?: string }) {
   switch (visual) {
+    case "dor-globe": return <DorGlobe />;
+    case "transformer-attention": return <TransformerAttention />;
     case "offer-flow":
     case "comms-flow":
     case "physician-flow":
@@ -476,4 +479,9 @@ export function VisualPanel({ visual, className }: { visual: VisualKey; classNam
     case "ask-decline":
       return <AskDecline />;
   }
+}
+
+/** Every placement shares the same accessible, finite-motion policy. */
+export function VisualPanel({ visual, className }: { visual: VisualKey; className?: string }) {
+  return <MotionScene kind={visual}><VisualContent visual={visual} className={className} /></MotionScene>;
 }

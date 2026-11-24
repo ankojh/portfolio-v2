@@ -12,10 +12,18 @@ import { cn } from "@/lib/utils";
  * without it, so it stays compact until someone asks a question.
  */
 export function AskAnkit({ onError }: { onError: (message: string) => void }) {
-  const { messages, submitQuestion, askMutation } = usePortfolioChat({ onError });
+  const { messages, submitQuestion, retryQuestion, chatError, waiting, askMutation } = usePortfolioChat({ onError });
   const pending = askMutation.isPending;
   const conversation = messages.filter((message) => message.id !== "initial");
   const suggestions = askSuggestions.slice(0, 3);
+
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    setSlow(false);
+    if (!pending) return;
+    const timer = setTimeout(() => setSlow(true), 8_000);
+    return () => clearTimeout(timer);
+  }, [pending]);
 
   const logRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -55,13 +63,18 @@ export function AskAnkit({ onError }: { onError: (message: string) => void }) {
               {message.content}
             </p>
           ))}
-          {pending && conversation[conversation.length - 1]?.role === "user" && (
+          {pending && waiting && (
             <p className="self-start rounded-[14px_14px_14px_4px] border border-[#E4D9C7] bg-white px-3.5 py-3 text-sm text-quiet">
-              Thinking…
+              {slow ? "The service may be waking up. Your question is still on its way…" : "Thinking…"}
             </p>
           )}
         </div>
       )}
+
+      {chatError && <div role="alert" className="mt-4 rounded-xl border border-rule bg-paper p-3 text-sm leading-relaxed">
+        <p>{chatError}</p>
+        <button type="button" className="text-link mt-2 min-h-9" onClick={retryQuestion} disabled={pending}>Retry question <span aria-hidden="true">↻</span></button>
+      </div>}
 
       <AskComposer disabled={pending} onSubmit={submitQuestion} />
 

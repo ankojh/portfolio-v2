@@ -1,3 +1,4 @@
+import { ProjectMotionProvider } from "@/components/visuals/ProjectMotion";
 import { useEffect } from "react";
 
 import { AppToast } from "@/components/AppToast";
@@ -51,7 +52,7 @@ export function App() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-ground text-ink">
+    <ProjectMotionProvider><div className="flex min-h-screen flex-col bg-ground text-ink">
       <a
         href="#main"
         className="sr-only z-50 rounded-full bg-ink px-4 py-2 text-ground focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
@@ -62,6 +63,6 @@ export function App() {
       {page}
       <SiteFooter />
       <AppToast message={toastMessage} />
-    </div>
+    </div></ProjectMotionProvider>
   );
 }

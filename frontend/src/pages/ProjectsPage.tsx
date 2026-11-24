@@ -2,7 +2,8 @@ import { useState } from "react";
 
 import { EvidenceBadge, Eyebrow } from "@/components/site/Brand";
 import { Link } from "@/components/site/Link";
-import { HeadsDownMini, VisualPanel } from "@/components/visuals/ProductVisuals";
+import { MotionControls } from "@/components/visuals/ProjectMotion";
+import { VisualPanel } from "@/components/visuals/ProductVisuals";
 import { type Project, type ProjectFilter, evidenceKey, projectFilters, projects } from "@/content/site";
 import { cn } from "@/lib/utils";
 
@@ -61,7 +62,7 @@ export function ProjectsPage() {
           <Eyebrow>Projects · {projects.length}</Eyebrow>
           <h1 className="display mt-[18px] text-[40px] leading-[1.05] tracking-[-0.022em] sm:text-[64px]">Things I build to learn by shipping.</h1>
           <p className="mt-5 text-[17px] leading-relaxed text-body sm:text-[19px]">
-            Independent products, each built to answer one product question. Each has a case study covering the decisions, tradeoffs and evidence so far.
+            Independent and team projects, each built to answer one product question. Each has a case study covering the decisions, tradeoffs and evidence so far.
           </p>
         </div>
         <div className="flex flex-wrap gap-2" aria-label="Evidence key">
@@ -89,14 +90,16 @@ export function ProjectsPage() {
           ))}
         </div>
         <span className="text-sm text-quiet" aria-live="polite">
-          {visible.length} {visible.length === 1 ? "project" : "projects"} · independent work
+          {visible.length} {visible.length === 1 ? "project" : "projects"} · independent and team work
         </span>
       </div>
+
+      <div className="motion-toolbar"><span>Illustrative product stories · one short scene at a time</span><MotionControls /></div>
 
       {featured && featuredHasCase && (
         <article id={featured.slug} className="mt-10 flex flex-wrap overflow-hidden rounded-3xl bg-sand">
           <div className="relative min-h-[300px] min-w-0 flex-[1_1_520px] bg-[#E9DDCA] sm:min-h-[420px]">
-            {featured.slug === "heads-down" ? <HeadsDownMini tall /> : <VisualPanel visual={featured.visual} />}
+            <VisualPanel visual={featured.visual} />
           </div>
           <div className="flex min-w-0 flex-[1_1_440px] flex-col gap-4 px-6 py-8 sm:px-11 sm:py-10">
             <div className="flex flex-wrap items-center justify-between gap-3">

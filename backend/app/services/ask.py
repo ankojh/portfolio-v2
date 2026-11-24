@@ -2,6 +2,8 @@ import json
 import logging
 from typing import AsyncIterator
 
+from openai import OpenAIError
+
 from fastapi import HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -138,10 +140,11 @@ async def embed_question(question: str, settings: Settings) -> list[float]:
     try:
         client = get_openai_client(settings)
         return await create_embedding(client, settings, question)
-    except RuntimeError as error:
+    except (RuntimeError, OpenAIError) as error:
+        logger.exception("Question embedding unavailable")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(error),
+            detail="Ask Ankit is temporarily unavailable. Please retry in a moment.",
         ) from error
 
 

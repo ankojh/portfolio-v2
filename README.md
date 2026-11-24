@@ -161,3 +161,21 @@ curl -X POST https://<backend-host>/ask \
 The ask flow embeds the question with `text-embedding-3-small`, retrieves the nearest `knowledge_chunks` rows from pgvector, and sends that context to `gpt-5-mini` through the OpenAI Responses API.
 
 The `/ask` endpoint is intentionally scoped to portfolio questions about Ankit Ojha's work, projects, skills, background, and contact details. Unrelated questions are rejected before embeddings or answer-model calls run. The backend also enforces a default app-level rate limit of 10 accepted or unrelated-question attempts per IP address every 30 minutes.
+
+## Portfolio checks and motion
+
+From `frontend/`, run `npm test`, `npm run lint`, and `npm run build`. Regression tests cover the SSE protocol, transport failure/timeout behavior, completed-turn chat history, retry/concurrent submissions, project-to-case-study coverage, and the illustration scheduler. From `backend/`, run `python -m pytest tests -q` (install the `dev` extra first); those tests mock upstream calls and cover project scope and safe embedding failures.
+
+Project illustrations share one scheduler: one visible scene at a time, a finite 4.8-second sequence, explicit replay, and a shared pause/resume choice. Resuming restarts an interrupted scene; illustrations show their complete still state while paused. Offscreen/hidden scenes stop, and the system follows changes to `prefers-reduced-motion`. Scene identity includes the visual kind so project filters receive a fresh playback. New projects belong in `frontend/src/content/site.ts`, with complete notes in `caseStudies.ts` and a visual key handled by `ProductVisuals.tsx`.
+
+Ask Ankit allows up to 90 seconds for connection or the next answer text, renewing the deadline as text arrives. A failure keeps the question visible with a retry button; failed partial answers are removed and excluded from follow-up history. A completed answer requires a valid event stream ending in `done`, rather than treating a dropped connection as success. Navigation cancels the active request. Health checks allow 75 seconds for a slow service startup; a reachable backend/database does not guarantee answer readiness.
+
+During November 23 checks, the first production health request timed out after 25 seconds; a subsequent `/ask` returned a complete streamed answer. Treat service startup as a possible source of delay, not as a confirmed diagnosis of every historical failure. The client now explains the wait after eight seconds and offers recoverable errors instead of waiting indefinitely.
+
+For local UI checks against an already deployed backend, use the Vite proxy (keeps browser requests same-origin):
+
+```bash
+VITE_DEV_PROXY_TARGET=https://api.ankojh.com npm run dev -- --port 5192
+```
+
+Leave `VITE_API_BASE_URL` blank for that command. In production, set `VITE_API_BASE_URL` to the backend origin as described above. Frontend and backend changes require their usual separate deployments. New knowledge files are indexed by the existing backend startup sync; adding the files to the frontend deployment alone does not update live answers.

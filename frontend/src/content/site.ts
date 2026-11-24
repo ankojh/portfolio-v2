@@ -27,7 +27,9 @@ export type VisualKey =
   | "physician-flow"
   | "credential-flow"
   | "onboarding-flow"
-  | "focus-play";
+  | "focus-play"
+  | "dor-globe"
+  | "transformer-attention";
 
 export const evidenceKey: EvidenceTag[] = [
   { kind: "shipped", label: "Shipped" },
@@ -205,6 +207,48 @@ export type Project = {
 
 // Newest first. Add new projects to the top; the index and filters pick them up.
 export const projects: Project[] = [
+  {
+    slug: "dor",
+    name: "Dor",
+    period: "Nov 2026",
+    month: "Nov 2026",
+    meta: "Nov 2026 · Multi-agent · News exploration",
+    filters: ["AI products", "Agents"],
+    status: { kind: "prototype", label: "Working prototype · team project" },
+    indexStatus: { kind: "prototype", label: "Prototype" },
+    pitch: "See where the news is happening, follow related stories, and inspect the sources behind them — on a live globe built by a team of specialized agents.",
+    oneLiner: "A real-time news globe that places reports, groups coverage of the same event, and surfaces possible connections between stories.",
+    productQuestion: "Can a map help people connect the news without hiding its sources or uncertainty?",
+    principle: "Make connections inspectable. A predicted relationship is a lead to investigate, not proof.",
+    evidence: "A team prototype. A bounded November 22 live-data run persisted 103 fresh articles and passed six core browser journeys. These are functional observations; accuracy and reader benefit are not yet independently established.",
+    explores: "Geographic context, agent coordination, source trust",
+    stack: "Go · NATS JetStream · PostgreSQL + pgvector · SolidJS · MapLibre · Jev",
+    href: "/work/dor",
+    sourceUrl: "https://github.com/ankojh/dor",
+    visual: "dor-globe",
+    homeVisual: "dor-globe",
+  },
+  {
+    slug: "transformer",
+    name: "Transformer Lab",
+    period: "Nov 2026",
+    month: "Nov 2026",
+    meta: "Nov 2026 · Learning · In-browser AI",
+    filters: ["AI products", "Learning"],
+    status: { kind: "prototype", label: "Working prototype" },
+    indexStatus: { kind: "prototype", label: "Prototype" },
+    pitch: "Follow a sentence through a transformer, then change a weight, remove an attention head, or edit a value and watch the prediction change.",
+    oneLiner: "An interactive transformer explainer and editable model lab, with real computations and a small model that runs in the browser.",
+    productQuestion: "What if understanding a model meant changing it and seeing what happens?",
+    principle: "Connect every explanation to the actual numbers, and make the consequences of an edit visible.",
+    evidence: "A ten-stage GPT-2 explainer and a Tiny/GPT-2 experiment lab. Tiny intermediate tensors are checked against PyTorch fixtures within 2e-4. The story has committed preview traces; live GPT-2 requires an optional model download. Learning outcomes have not been measured.",
+    explores: "Attention, editable models, learning through experiments",
+    stack: "React · TypeScript · Web Workers · GPT-2 · hand-written inference · PyTorch parity fixtures",
+    href: "/work/transformer",
+    sourceUrl: "https://github.com/ankojh/transformer",
+    visual: "transformer-attention",
+    homeVisual: "transformer-attention",
+  },
   {
     slug: "heads-down",
     name: "Heads Down",

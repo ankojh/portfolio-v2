@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 
 import { ArchFrame, EvidenceBadge, Eyebrow } from "@/components/site/Brand";
 import { Link } from "@/components/site/Link";
-import { HeadsDownPanelBody, HeadsDownWindow } from "@/components/visuals/ProductVisuals";
+import { VisualPanel } from "@/components/visuals/ProductVisuals";
+import { MotionControls } from "@/components/visuals/ProjectMotion";
 
 /* Sources: heads-down/README.md and heads-down/bench/FINDINGS.md. */
 
@@ -180,18 +181,15 @@ export function HeadsDownCaseStudy() {
 
       <figure className="mt-12 sm:mt-14">
         <ArchFrame shape="low" className="hidden h-[600px] md:block">
-          <HeadsDownWindow />
+          <VisualPanel visual="heads-down-window" />
         </ArchFrame>
         <ArchFrame shape="tall" className="h-[400px] md:hidden">
-          <div className="ui-card absolute inset-x-4 top-32 rounded-[14px] p-4" role="img" aria-label="Illustration: the Heads Down panel showing the current task, the Balanced hiding level and pause options.">
-            <div aria-hidden="true">
-              <HeadsDownPanelBody />
-            </div>
-          </div>
+          <div className="absolute inset-x-2 top-28 bottom-4"><VisualPanel visual="heads-down-mini" /></div>
         </ArchFrame>
         <figcaption className="mt-3.5 text-[13px] leading-normal text-quiet">
           Illustrative composite. The lecture stays visible because it matches the task; the recommendations beside it are blurred. Tabs and the address bar always stay visible, as do controls the app exposes to accessibility.
         </figcaption>
+        <div className="mt-3"><MotionControls /></div>
       </figure>
 
       <div className="mt-14 sm:mt-[72px]">

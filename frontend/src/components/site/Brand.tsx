@@ -3,18 +3,30 @@ import { useId, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { EvidenceKind } from "@/content/site";
 
-/** An asymmetric infinity ribbon with a small over-under crossing. */
+/*
+ * AO, to infinity: one heavy band draws a triangular loop (the A) and a round loop (the O)
+ * and crosses itself once. The A half takes currentColor, the O half persimmon. The strand
+ * from the O's lower edge into the A's right leg passes over; the gap under it is a mask, so
+ * the mark works on any background.
+ */
+const AO_BAND = "M45 32 L23 6 L4 57 L31 57 L45 32";
+const AO_LOOP = "M45 32 C50.9 21.5 57 10 69 10 C81.15 10 91 19.85 91 32 C91 44.15 81.15 54 69 54 C57 54 52.75 41.2 45 32";
+const AO_OVER = "M53.34 43.72 C50.64 39.94 48.1 35.68 45 32 L37.9 23.6";
+
 export function AoLogo({ size = 36, className }: { size?: number; className?: string }) {
   const crossingId = useId();
   return (
-    <svg viewBox="0 0 96 64" width={size * 1.5} height={size} className={className} role="img" aria-label="Ankit’s woven infinity mark">
+    <svg viewBox="0 0 96 64" width={size * 1.5} height={size} className={className} role="img" aria-label="AO monogram: an A and an O drawn as one infinity loop">
       <defs><mask id={crossingId} maskUnits="userSpaceOnUse" x="0" y="0" width="96" height="64">
         <rect width="96" height="64" fill="white" />
-        <path d="M40.678 38.487 C43.962 35.324 47.330 31.567 50.861 27.485" fill="none" stroke="black" strokeWidth="10" strokeLinecap="round" />
+        <path d={AO_OVER} fill="none" stroke="black" strokeWidth="14" />
       </mask></defs>
-      <g fill="none" strokeWidth="4.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M48 32 C36 18 26 12 16 17 C0 25 5 46 20 48 C31 50 41 39 53 25 C65 11 78 10 87 20 C100 36 88 54 74 48 C65 44 57 40 48 32Z" stroke="currentColor" mask={`url(#${crossingId})`} />
-        <path d="M40.678 38.487 C43.962 35.324 47.330 31.567 50.861 27.485" stroke="#a4452d" />
+      <g fill="none" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round">
+        <g mask={`url(#${crossingId})`}>
+          <path d={AO_BAND} stroke="currentColor" />
+          <path d={AO_LOOP} stroke="#a4452d" />
+        </g>
+        <path d={AO_OVER} stroke="currentColor" />
       </g>
     </svg>
   );

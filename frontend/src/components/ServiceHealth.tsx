@@ -13,7 +13,7 @@ export function ServiceHealth() {
   });
 
   const state = isError ? "unknown" : isPending ? "checking" : data?.status === "ok" && data.database === "ok" ? "online" : "degraded";
-  const label = { online: "Systems online", checking: "Checking systems", degraded: "Service issue", unknown: "Connection issue" }[state];
+  const label = { online: "Service reachable", checking: "Connecting", degraded: "Service issue", unknown: "Service waking or unavailable" }[state];
   const backend = isError ? "Check failed" : isPending ? "Checking…" : "Responding";
   const database = isError ? "Unknown" : isPending ? "Checking…" : data?.database === "ok" ? "Connected" : "Unavailable";
 
@@ -26,7 +26,7 @@ export function ServiceHealth() {
       </summary>
       <div className="health-readout">
         <dl><div><dt>Backend</dt><dd>{backend}</dd></div><div><dt>Database</dt><dd>{database}</dd></div></dl>
-        <p>{isError ? "Couldn’t verify services. Retrying automatically." : isPending ? "Contacting the portfolio service…" : `Checked ${new Date(dataUpdatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · refreshes every 30s`}</p>
+        <p>Connection status does not verify answer generation.</p><p>{isError ? "The service may be starting. You can still send a question; status will retry automatically." : isPending ? "Contacting the portfolio service…" : `Checked ${new Date(dataUpdatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · refreshes every 30s`}</p>
       </div>
     </details>
   );

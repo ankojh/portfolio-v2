@@ -1,3 +1,4 @@
+import { readServerSentEvents } from "@/lib/sse";
 import { getClientMetadata } from "@/lib/clientMetadata";
 import type {
   ChatHistoryTurn,
@@ -8,7 +9,7 @@ import type {
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || "/api";
 
 export async function getHealth(): Promise<HealthResponse> {
-  const response = await fetch(`${apiBaseUrl}/health`, { signal: AbortSignal.timeout(5_000) });
+  const response = await fetch(`${apiBaseUrl}/health`, { signal: AbortSignal.timeout(75_000) });
 
   if (!response.ok) {
     throw new Error("Health check failed");
@@ -57,83 +58,48 @@ export async function askQuestion({
   question,
   history,
   onDelta,
+  signal,
 }: {
   question: string;
   history: ChatHistoryTurn[];
   onDelta: (delta: string) => void;
+  signal?: AbortSignal;
 }): Promise<void> {
-  const response = await fetch(`${apiBaseUrl}/ask`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      question,
-      history,
-      client_metadata: getClientMetadata(),
-    }),
-  });
-
-  if (!response.ok) {
-    const errorBody = (await response.json().catch(() => null)) as {
-      detail?: string;
-    } | null;
-    throw new Error(errorBody?.detail ?? "Ask request failed");
-  }
-
-  if (!response.body) {
-    throw new Error("Ask request failed");
-  }
-
-  await readServerSentEvents(response.body, onDelta);
-}
-
-async function readServerSentEvents(
-  stream: ReadableStream<Uint8Array>,
-  onDelta: (delta: string) => void,
-): Promise<void> {
-  const reader = stream.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) {
-      break;
-    }
-
-    buffer += decoder.decode(value, { stream: true });
-    const events = buffer.split("\n\n");
-    buffer = events.pop() ?? "";
-
-    for (const event of events) {
-      const payload = parseServerSentEvent(event);
-      if (!payload) {
-        continue;
-      }
-      if (payload.error) {
-        throw new Error(payload.error);
-      }
-      if (payload.delta) {
-        onDelta(payload.delta);
-      }
-    }
-  }
-}
-
-function parseServerSentEvent(event: string): {
-  delta?: string;
-  error?: string;
-  done?: boolean;
-} | null {
-  const dataLine = event.split("\n").find((line) => line.startsWith("data: "));
-  if (!dataLine) {
-    return null;
-  }
-
-  return JSON.parse(dataLine.slice("data: ".length)) as {
-    delta?: string;
-    error?: string;
-    done?: boolean;
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  let timedOut = false;
+  let timeout: ReturnType<typeof setTimeout>;
+  const resetTimeout = () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 90_000);
   };
+  if (signal?.aborted) controller.abort();
+  signal?.addEventListener("abort", abort, { once: true });
+  resetTimeout();
+  try {
+    const response = await fetch(`${apiBaseUrl}/ask`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      body: JSON.stringify({ question, history, client_metadata: getClientMetadata() }),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      if (response.status === 429) throw new Error("You’ve reached the question limit. Please try again in a little while.");
+      if (response.status >= 500 || response.status === 409) throw new Error("Ask Ankit is temporarily unavailable. Please retry in a moment.");
+      const body = await response.json().catch(() => null) as { detail?: unknown } | null;
+      throw new Error(typeof body?.detail === "string" ? body.detail : "That question couldn’t be sent. Please try again.");
+    }
+    if (!response.headers.get("content-type")?.toLowerCase().includes("text/event-stream") || !response.body) {
+      throw new Error("Ask Ankit couldn’t connect. Please retry in a moment.");
+    }
+    await readServerSentEvents(response.body, (delta) => { resetTimeout(); onDelta(delta); });
+  } catch (error) {
+    if (timedOut) throw new Error("Ask Ankit took too long to respond. The service may be waking up — please retry.");
+    if (controller.signal.aborted) throw error;
+    if (error instanceof TypeError) throw new Error("Couldn’t reach Ask Ankit. Check your connection and retry.");
+    throw error;
+  } finally {
+    clearTimeout(timeout!);
+    signal?.removeEventListener("abort", abort);
+  }
 }

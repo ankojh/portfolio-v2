@@ -4,6 +4,7 @@ import { WorthBuilding } from "@/components/WorthBuilding";
 import { AskAnkit } from "@/components/AskAnkit";
 import { AoLogo, EvidenceBadge, JaliBand, PrintFlower } from "@/components/site/Brand";
 import { Link } from "@/components/site/Link";
+import { MotionControls } from "@/components/visuals/ProjectMotion";
 import { VisualPanel } from "@/components/visuals/ProductVisuals";
 import { about, education, experience, featuredCase, projects } from "@/content/site";
 import { workCases } from "@/content/caseStudies";
@@ -87,6 +88,7 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
         <div className="page-width">
           <div className="section-index"><span>02 / The side of my desk</span><span>Questions turned into prototypes</span></div>
           <div className="section-title-row"><PrintFlower className="desk-flower" /><div><h2 id="projects-heading">I think better when I can try it.</h2><p>These are my small bets on how people could work with AI.</p></div><Link to="/projects" className="text-link">All projects <ArrowUpRight size={17} aria-hidden="true" /></Link></div>
+          <div className="motion-toolbar"><span>Illustrative product stories · one short scene at a time</span><MotionControls /></div>
           <article className="desk-lead">
             <div className="desk-lead-visual"><VisualPanel visual={leadProject.homeVisual} /></div>
             <div className="desk-lead-copy">
@@ -94,17 +96,16 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
               <h3>{leadProject.name}</h3>
               <p>{leadProject.pitch}</p>
               <blockquote>{leadProject.productQuestion}</blockquote>
-              <Link to={leadProject.href!} className="text-link">Inside Heads Down <ArrowUpRight size={17} aria-hidden="true" /></Link>
+              <Link to={leadProject.href!} className="text-link">Inside {leadProject.name} <ArrowUpRight size={17} aria-hidden="true" /></Link>
             </div>
           </article>
           <p className="visual-caption">Illustrative product reconstruction</p>
           <div className="experiment-list">
             {independentProjects.map((project, index) => (
-              <Link to={project.href!} className="experiment" key={project.slug}>
-                <span className="experiment-number">0{index + 2}</span>
-                <div><h3>{project.name}</h3><p>{project.pitch}</p><p className="experiment-question"><span>The question</span> {project.productQuestion}</p><span className="experiment-status">{project.status.label} · {project.meta.split(" · ").slice(1).join(" · ")}</span></div>
-                <ArrowUpRight size={22} className="experiment-arrow" aria-hidden="true" />
-              </Link>
+              <article className="experiment experiment--visual" key={project.slug}>
+                <div className="experiment-art"><VisualPanel visual={project.homeVisual} /></div>
+                <div className="experiment-copy"><span className="experiment-number">Field note / {String(index + 2).padStart(2, "0")}</span><h3><Link to={project.href!}>{project.name}</Link></h3><p>{project.pitch}</p><p className="experiment-question"><span>The question</span> {project.productQuestion}</p><span className="experiment-status">{project.status.label} · {project.meta.split(" · ").slice(1).join(" · ")}</span><Link to={project.href!} className="text-link">Inside the project <ArrowUpRight size={15} aria-hidden="true" /></Link></div>
+              </article>
             ))}
           </div>
         </div>
@@ -113,7 +114,7 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
       <section id="about" className="page-width about-section" aria-labelledby="about-heading">
         <div className="section-index"><span>03 / The person behind the work</span></div>
         <div className="about-layout">
-          <div className="about-aside"><AoLogo size={64} className="h-16 w-24 shrink-0 text-terra" /><p>{about.personal}</p></div>
+          <div className="about-aside"><AoLogo size={64} className="h-16 w-24 shrink-0 text-ink" /><p>{about.personal}</p></div>
           <div className="about-copy">
             <h2 id="about-heading">Closer to the problem.<br /><em>Still close to the build.</em></h2>
             <p>At Pulley, I worked with product and design on new products. At Mochi Health, I joined discovery with operations and introduced analytics to help the team decide what to fix next. That’s the work I want to do more of.</p>

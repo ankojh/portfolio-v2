@@ -123,6 +123,26 @@ const workNotes: Record<string, Notes> = {
 };
 
 const independentNotes: Record<string, Notes> = {
+  dor: {
+    question: "Can a map help readers connect the news while keeping sources and uncertainty in view?",
+    decisions: [
+      { title: "Build a globe–wire–source workflow", detail: "Dor places incoming reports on an interactive globe and connects each story back to its attributed source. Geography provides a starting point for investigation, while the wire keeps individual reports within reach.", tradeoff: "A map can overstate precision. Approximate locations and reports that cannot be placed need explicit treatment." },
+      { title: "Separate repeated coverage from related stories", detail: "Specialized agents normalize, locate, classify and embed reports. Clustering groups coverage of one event; a separate relation judge assesses candidate links between distinct events.", tradeoff: "Semantic similarity does not establish causation. Predicted relationships remain labelled and inspectable." },
+      { title: "Design for uneven model availability", detail: "Go agents coordinate over NATS JetStream, with durable messages, retries and entity-level idempotency. Configured fallbacks keep parts of the pipeline running when enrichment is unavailable; an operations surface exposes runtime state.", tradeoff: "A functioning fallback path is not equivalent to model-quality enrichment. The November 22 run used deterministic fallbacks for most later items after throttling." },
+    ],
+    limits: "Dor is a team project by Haider Abbas, Nikhil Gaurav and Ankit Ojha. The bounded live-data run demonstrates selected functional paths, not independent accuracy, sustained reliability, or measured reader benefit. Placement and classification can be approximate; story links remain unverified. External alerts require separate demonstration.",
+    next: "Compare placement, clustering and relation judgments against human-labelled baselines, then observe whether readers can investigate an event and explain the evidence behind a connection.",
+  },
+  transformer: {
+    question: "Can people understand a transformer by changing its parts and seeing the prediction respond?",
+    decisions: [
+      { title: "Start with one sentence", detail: "A ten-stage story follows tokens through embeddings, position, attention, multiple heads, the MLP, stacked layers and the output distribution. The explanations use numbers from model computations.", tradeoff: "The first story screens can use committed traces while live weights load. Preview results must remain distinguishable from a fresh live run." },
+      { title: "Turn the architecture into an experiment", detail: "The Lab exposes atomic steps, equations and tensor values. A visitor can edit activations or weights, remove heads, switch off position or residual connections, and compare the result with the baseline.", tradeoff: "More controls can overwhelm a learner. The small Tiny model and one-click experiments make a bounded starting point, while GPT-2 offers a larger model to inspect." },
+      { title: "Keep computation close to the explanation", detail: "A hand-written TypeScript engine runs in a Web Worker, and intermediate tensors are compared against PyTorch fixtures. Tiny works without a GPT-2 download; the larger live model uses optional weight shards of about 249 MB.", tradeoff: "Browser execution makes the system inspectable but carries download, memory and compute costs. Numerical parity verifies implementation behavior; it does not establish teaching effectiveness." },
+    ],
+    limits: "This is an independent working prototype. Tiny parity within 2e-4 is numerical verification against fixtures, not a model-accuracy score or evidence of learning gains. The preview traces do not imply live GPT-2 weights are loaded, and the full model is not bundled into this portfolio.",
+    next: "Observe whether learners can predict what an intervention will change, explain the result, and transfer that understanding to a different sentence or model component.",
+  },
   hush: {
     question: "Can listening fit into the task someone is already doing?",
     decisions: [
@@ -183,7 +203,7 @@ export const caseStudies: CaseStudy[] = [
   })),
   ...projects.filter((item) => item.slug !== "heads-down").map((item) => ({
     slug: item.slug, title: item.name, meta: item.meta,
-    summary: item.oneLiner, role: item.slug === "focus-play" ? "Built the local prototype; product concept and recommendation developed in a team project." : "Independent project — product exploration, design and implementation.",
+    summary: item.oneLiner, role: item.slug === "dor" ? "Team project with Haider Abbas and Nikhil Gaurav — shared product and engineering work; individual ownership is not broken out here." : item.slug === "focus-play" ? "Built the local prototype; product concept and recommendation developed in a team project." : "Independent project — product exploration, design and implementation.",
     evidence: item.evidence, visual: item.visual, caption: "Illustrative product reconstruction",
     sourceUrl: item.sourceUrl, tryHref: item.slug === "ask-ankit" ? "/#ask" : undefined,
     ...independentNotes[item.slug],

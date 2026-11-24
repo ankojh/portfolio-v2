@@ -4,6 +4,10 @@ import re
 
 
 PORTFOLIO_TERMS = {
+    "dor",
+    "transformer",
+    "hush",
+    "yudhyantra",
     "ai",
     "ankit",
     "backend",
