@@ -94,7 +94,7 @@ export function ProjectsPage() {
         </span>
       </div>
 
-      <div className="motion-toolbar"><span>Illustrative product stories · looping gently · one scene at a time</span><MotionControls /></div>
+      <div className="motion-toolbar"><span>Illustrative product stories · looping gently · some you can try</span><MotionControls /></div>
 
       {featured && featuredHasCase && (
         <article id={featured.slug} className="mt-10 flex flex-wrap overflow-hidden rounded-3xl bg-sand">

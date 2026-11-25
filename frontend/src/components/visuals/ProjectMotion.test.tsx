@@ -3,6 +3,13 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 import { MotionControls, MotionScene, ProjectMotionProvider, SCENE_DURATION, SCENE_REST } from "./ProjectMotion";
+import { useSceneControl } from "./sceneControl";
+
+/** Exposes the raw `takeOver` contract so the scheduler's hold/release bug fixes are testable without a real illustration. */
+function TakeOverChild() {
+  const { takeOver } = useSceneControl();
+  return <button onClick={takeOver}>take over</button>;
+}
 
 type Observer = { callback: IntersectionObserverCallback; target?: Element; disconnect: Mock<() => void> };
 let observers: Observer[];
@@ -383,5 +390,118 @@ describe("project motion scheduler", () => {
     expect(removeVisibilityListener).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
     await advance((SCENE_DURATION + SCENE_REST) * 3);
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(["reduced", "hidden"] as const)("clears a held scene's hold unconditionally on reset, so it plays once %s motion is lifted", async (reason) => {
+    render(<ProjectMotionProvider>
+      <MotionControls />
+      <MotionScene kind="probe"><TakeOverChild /><span>probe art</span></MotionScene>
+    </ProjectMotionProvider>);
+    visibility([1]);
+    expectPlaying("probe art");
+
+    fireEvent.click(screen.getByText("take over"));
+    expect(playing()).toHaveLength(0);
+    expect(vi.getTimerCount()).toBe(0);
+
+    if (reason === "reduced") setReduced(true); else setHidden(true);
+    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
+    expect(playing()).toHaveLength(0);
+
+    if (reason === "reduced") setReduced(false); else setHidden(false);
+    expectPlaying("probe art");
+  });
+
+  it.each(["reduced", "hidden"] as const)("does not clear the user's pause preference when resetting a held scene while %s motion suppresses it", async (reason) => {
+    render(<ProjectMotionProvider>
+      <MotionControls />
+      <MotionScene kind="probe"><TakeOverChild /><span>probe art</span></MotionScene>
+    </ProjectMotionProvider>);
+    visibility([1]);
+    fireEvent.click(screen.getByText("take over"));
+    fireEvent.click(screen.getByRole("button", { name: "Pause illustrations" }));
+    const control = document.querySelector(".motion-control")!;
+    expect(control.getAttribute("aria-pressed")).toBe("true");
+
+    if (reason === "reduced") setReduced(true); else setHidden(true);
+    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
+    expect(control.getAttribute("aria-pressed")).toBe("true");
+
+    if (reason === "reduced") setReduced(false); else setHidden(false);
+    // The pause preference, left untouched by the bailed replay, still holds the scene back.
+    expect(playing()).toHaveLength(0);
+    fireEvent.click(control);
+    expectPlaying("probe art");
+  });
+
+  it.each(["reduced", "hidden"] as const)("does not disturb a sibling scene queued to resume when a held scene is reset while %s motion is active", async (reason) => {
+    render(<ProjectMotionProvider>
+      <MotionControls />
+      <MotionScene kind="probe"><TakeOverChild /><span>probe art</span></MotionScene>
+      <MotionScene kind="other"><span>other art</span></MotionScene>
+    </ProjectMotionProvider>);
+    visibility([1, 1]);
+    expectPlaying("probe art");
+    await advance(SCENE_DURATION);
+    expectPlaying("other art");
+    await advance(SCENE_DURATION / 2);
+
+    if (reason === "reduced") setReduced(true); else setHidden(true);
+    expect(playing()).toHaveLength(0);
+
+    fireEvent.click(screen.getByText("take over"));
+    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
+
+    if (reason === "reduced") setReduced(false); else setHidden(false);
+    // "other" was the one interrupted mid-playback; resetting the unrelated held scene
+    // must not have disturbed its queued resume priority or stolen its remaining time.
+    expectPlaying("other art");
+    await advance(SCENE_DURATION - 1);
+    expectPlaying("other art");
+  });
+
+  it.each([false, true])("clears a reused slot's driven state when its kind changes, even under reduced motion (reduced: %s)", (isReduced) => {
+    if (isReduced) reduced = true;
+    const scene = (kind: string) => <ProjectMotionProvider>
+      <MotionControls />
+      <MotionScene kind={kind}><TakeOverChild /><span>{kind}</span></MotionScene>
+    </ProjectMotionProvider>;
+    const view = render(scene("dor-globe"));
+    fireEvent.click(screen.getByText("take over"));
+    expect(screen.getByRole("button", { name: "Reset the dor globe illustration" })).toBeTruthy();
+
+    view.rerender(scene("transformer-attention"));
+    const slot = screen.getByText("transformer-attention").closest(".motion-scene")!;
+    expect(slot.getAttribute("data-driven")).toBe("false");
+    expect(screen.getByRole("button", { name: "Replay transformer attention illustration" })).toBeTruthy();
+  });
+
+  it("lets a reset scene play again once the observer reports full visibility, even after being taken over while offscreen", async () => {
+    render(<ProjectMotionProvider>
+      <MotionControls />
+      <MotionScene kind="probe"><TakeOverChild /><span>probe art</span></MotionScene>
+    </ProjectMotionProvider>);
+    visibility([1]);
+    expectPlaying("probe art");
+
+    fireEvent.click(screen.getByText("take over"));
+    expect(playing()).toHaveLength(0);
+
+    visibility([0]);
+    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
+    expect(playing()).toHaveLength(0);
+    expect(vi.getTimerCount()).toBe(0);
+
+    visibility([1]);
+    expectPlaying("probe art");
+  });
+
+  it("still drops a genuinely identical repeat observation without creating extra timer churn", () => {
+    mountScenes(1);
+    visibility([1]);
+    expectPlaying("Dor art");
+
+    visibility([1]);
+    expectPlaying("Dor art");
   });
 });

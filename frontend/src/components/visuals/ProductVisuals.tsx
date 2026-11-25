@@ -4,6 +4,8 @@ import { HeadsDownDemo } from "@/components/visuals/HeadsDownDemo";
 import { WorkIllustration } from "@/components/visuals/WorkIllustrations";
 import { DorGlobe, TransformerAttention } from "@/components/visuals/NewProjectVisuals";
 import { MotionScene } from "@/components/visuals/ProjectMotion";
+import { SceneChoice, SceneNote } from "@/components/visuals/SceneControls";
+import { useSceneChoice } from "@/components/visuals/sceneControl";
 import type { VisualKey } from "@/content/site";
 import { cn } from "@/lib/utils";
 
@@ -49,19 +51,46 @@ function RunPlan() {
   );
 }
 
+/*
+ * TFF grants autonomy per action, so the decision is the control. Approving records a
+ * decision in the illustration; nothing runs here, and the harness still requires
+ * evidence before a task can be called done.
+ */
+const decisions = {
+  pending: { label: "Approval needed", note: "Sandboxed · no network · 30 s limit" },
+  approved: { label: "Approved", note: "Allowed, this command only." },
+  denied: { label: "Denied", note: "Nothing ran. It must retry." },
+};
+
 export function TffApproval() {
+  const { value: decision, choose } = useSceneChoice<keyof typeof decisions>("pending");
   return (
-    <div className="absolute inset-0" role="img" aria-label="Illustration: an agent's run plan waiting on verification, and an approval card for a sandboxed test command.">
-      <div aria-hidden="true">
-        <RunPlan />
-        <div className="ui-card absolute right-5 top-[26px] w-1/2 p-3.5">
-          <div className="label text-[10px] text-[#8A3A1C]">Approval needed</div>
+    <div className="absolute inset-0">
+      <p className="sr-only">
+        Illustration: an agent’s run plan waiting on verification, beside an approval card for a sandboxed test
+        command. You can approve or deny the command; the illustration records your decision and does not run
+        anything.
+      </p>
+      <div aria-hidden="true"><RunPlan /></div>
+      <div className="ui-card absolute right-5 top-[26px] w-1/2 p-3.5">
+        <div aria-hidden="true">
+          <div className="label text-[10px] text-[#8A3A1C]">{decisions[decision].label}</div>
           <div className="mt-2 rounded-md bg-[#F5EFE6] p-2 font-mono text-[11.5px]">run_command  pytest -q</div>
-          <div className="mt-2 text-[11px] text-quiet">Sandboxed · no network · 30 s limit</div>
-          <div className="mt-3 flex gap-1.5">
-            <span className="flex-1 rounded-[7px] bg-ink p-[7px] text-center text-[11.5px] font-semibold text-ground">Approve</span>
-            <span className="flex-1 rounded-[7px] border border-[#CDBDA5] p-[7px] text-center text-[11.5px] font-semibold">Deny</span>
-          </div>
+        </div>
+        <SceneNote className="mt-2 text-[11px] leading-snug text-quiet">{decisions[decision].note}</SceneNote>
+        {/* Both decisions stay fully legible whichever one is taken: the chosen one is
+            filled, the other is an ordinary outline button, never a faded one. */}
+        <div className="mt-3 flex gap-1.5" role="group" aria-label="Approve or deny this sandboxed command">
+          <SceneChoice
+            pressed={decision === "approved"}
+            onClick={() => choose("approved")}
+            className={cn("flex-1 rounded-[7px] p-[7px] text-center text-[11.5px] font-semibold", decision === "denied" ? "border border-[#CDBDA5] text-ink" : "bg-ink text-ground")}
+          >Approve</SceneChoice>
+          <SceneChoice
+            pressed={decision === "denied"}
+            onClick={() => choose("denied")}
+            className={cn("flex-1 rounded-[7px] border p-[7px] text-center text-[11.5px] font-semibold text-ink", decision === "denied" ? "border-ink bg-[#EFE2D4]" : "border-[#CDBDA5]")}
+          >Deny</SceneChoice>
         </div>
       </div>
     </div>

@@ -184,7 +184,7 @@ export function HeadsDownCaseStudy() {
           <VisualPanel visual="heads-down-window" />
         </div>
         <figcaption className="mt-3.5 text-[13px] leading-normal text-quiet">
-          Illustrative composite. The lecture stays visible because it matches the task; the recommendations beside it are blurred. Tabs and the address bar always stay visible, as do controls the app exposes to accessibility.
+          Illustrative composite. The lecture stays visible because it matches the task; the recommendations beside it are blurred. Tabs and the address bar always stay visible, as do controls the app exposes to accessibility. Set how much it hides to compare the three cutoffs.
         </figcaption>
         <div className="mt-3"><MotionControls /></div>
       </figure>
