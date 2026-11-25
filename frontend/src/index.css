@@ -582,15 +582,10 @@
   .portrait-note { padding: 4px; }
 }
 
-/* Quiet motion: one finite product story, followed by a complete still image. */
+/* Quiet motion: every visible scene loops on its own, with no playback chrome. */
 .motion-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; color:#77676e; font-size:11px; }
-.motion-control { display:inline-flex; align-items:center; gap:7px; min-height:36px; border:1px solid #cdbdb8; border-radius:30px; padding:7px 12px; font:11px/1.4 "Instrument Sans",system-ui,sans-serif; color:#62545b; background:#fffdfa; cursor:pointer; }
-.motion-control:disabled { cursor:default; }
-.motion-control:focus-visible,.scene-replay:focus-visible { outline:2px solid #a4452d; outline-offset:3px; }
 .motion-scene { position:absolute; inset:0; overflow:hidden; container-type:size; background:inherit; }
-.scene-art { position:absolute; inset:0 0 34px; overflow:hidden; }
-.scene-replay { position:absolute; bottom:7px; right:12px; z-index:5; display:inline-flex; align-items:center; gap:5px; min-height:26px; padding:3px 8px; border:1px solid #c7b6ad; background:#fffdfa; color:#62545b; border-radius:20px; font-size:10px; cursor:pointer; }
-.scene-replay:disabled { border-color:transparent; background:transparent; cursor:default; }
+.scene-art { position:absolute; inset:0; overflow:hidden; }
 /* Illustrations a visitor can operate. Controls belong to the artwork, so each scene
    styles its own; these are the shared affordances, sized for a finger either way. */
 .scene-choices { min-width:0; }

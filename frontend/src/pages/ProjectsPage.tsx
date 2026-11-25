@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import { EvidenceBadge, Eyebrow } from "@/components/site/Brand";
 import { Link } from "@/components/site/Link";
-import { MotionControls } from "@/components/visuals/ProjectMotion";
 import { VisualPanel } from "@/components/visuals/ProductVisuals";
 import { type Project, type ProjectFilter, evidenceKey, projectFilters, projects } from "@/content/site";
 import { cn } from "@/lib/utils";
@@ -94,7 +93,7 @@ export function ProjectsPage() {
         </span>
       </div>
 
-      <div className="motion-toolbar"><span>Illustrative product stories · looping gently · some you can try</span><MotionControls /></div>
+      <div className="motion-toolbar"><span>Illustrative product stories · looping gently · some you can try</span></div>
 
       {featured && featuredHasCase && (
         <article id={featured.slug} className="mt-10 flex flex-wrap overflow-hidden rounded-3xl bg-sand">

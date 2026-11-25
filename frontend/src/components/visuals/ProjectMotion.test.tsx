@@ -2,14 +2,8 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
-import { MotionControls, MotionScene, ProjectMotionProvider, SCENE_DURATION, SCENE_REST } from "./ProjectMotion";
+import { MotionScene, ProjectMotionProvider } from "./ProjectMotion";
 import { useSceneControl } from "./sceneControl";
-
-/** Exposes the raw `takeOver` contract so the scheduler's hold/release bug fixes are testable without a real illustration. */
-function TakeOverChild() {
-  const { takeOver } = useSceneControl();
-  return <button onClick={takeOver}>take over</button>;
-}
 
 type Observer = { callback: IntersectionObserverCallback; target?: Element; disconnect: Mock<() => void> };
 let observers: Observer[];
@@ -17,12 +11,18 @@ let reduced: boolean;
 let preferenceListeners: Set<() => void>;
 let removePreferenceListener: Mock<(event: string, callback: () => void) => boolean>;
 
+/** Every visible scene is independent — no shared rotation, no shared state. */
 function mountScenes(count = 2) {
   return render(<ProjectMotionProvider>
-    <MotionControls />
     <MotionScene kind="dor-globe"><span>Dor art</span></MotionScene>
     {count > 1 && <MotionScene kind="transformer-attention"><span>Transformer art</span></MotionScene>}
   </ProjectMotionProvider>);
+}
+
+/** Exposes the raw `takeOver` contract so it is testable without a real illustration. */
+function TakeOverProbe({ label }: { label: string }) {
+  const { takeOver } = useSceneControl();
+  return <button onClick={takeOver}>{`take over ${label}`}</button>;
 }
 
 function visibility(ratios: number[]) {
@@ -37,16 +37,6 @@ function playing() {
   return Array.from(document.querySelectorAll<HTMLElement>('[data-playing="true"]'));
 }
 
-function expectPlaying(art: string) {
-  expect(playing()).toHaveLength(1);
-  expect(playing()[0].textContent).toContain(art);
-  expect(vi.getTimerCount()).toBe(1);
-}
-
-async function advance(time: number) {
-  await act(async () => { await vi.advanceTimersByTimeAsync(time); });
-}
-
 function setReduced(value: boolean) {
   act(() => { reduced = value; preferenceListeners.forEach((callback) => callback()); });
 }
@@ -56,8 +46,10 @@ function setHidden(value: boolean) {
   fireEvent(document, new Event("visibilitychange"));
 }
 
-describe("project motion scheduler", () => {
+describe("project motion", () => {
   beforeEach(() => {
+    // Fake timers aren't driving anything here — nothing in this model ever schedules a
+    // timeout — but vi.getTimerCount() still needs them installed to be asked at all.
     vi.useFakeTimers();
     observers = [];
     reduced = false;
@@ -81,427 +73,136 @@ describe("project motion scheduler", () => {
   });
   afterEach(() => { cleanup(); vi.useRealTimers(); });
 
-  it("keeps each scene finite and rests between at least three single-scene cycles", async () => {
-    expect(SCENE_DURATION).toBe(4800);
-    expect(SCENE_REST).toBe(1200);
-    mountScenes(1);
+  it("plays every visible scene at once, indefinitely — no turn-taking", () => {
+    mountScenes();
+    visibility([1, 1]);
+    expect(playing()).toHaveLength(2);
+    expect(vi.getTimerCount()).toBe(0);
+
+    // Nothing ever stops on its own: both stay playing for as long as they stay visible.
+    visibility([1, 1]);
+    expect(playing()).toHaveLength(2);
+  });
+
+  it("follows the 0.5 visibility threshold, independently per scene", () => {
+    mountScenes();
+    visibility([0.49, 0.49]);
+    expect(playing()).toHaveLength(0);
+
+    visibility([0.5, 0.49]);
+    expect(playing()).toHaveLength(1);
+    expect(playing()[0].textContent).toContain("Dor art");
+
+    visibility([0.5, 0.5]);
+    expect(playing()).toHaveLength(2);
+
+    visibility([0.49, 0.5]);
+    expect(playing()).toHaveLength(1);
+    expect(playing()[0].textContent).toContain("Transformer art");
+
+    visibility([0.49, 0.49]);
+    expect(playing()).toHaveLength(0);
+  });
+
+  it.each(["reduced", "hidden"] as const)("stops every visible scene under %s motion and resumes them all once it lifts", (reason) => {
+    mountScenes();
+    visibility([1, 1]);
+    expect(playing()).toHaveLength(2);
+
+    if (reason === "reduced") setReduced(true); else setHidden(true);
+    expect(playing()).toHaveLength(0);
+    expect(vi.getTimerCount()).toBe(0);
+
+    if (reason === "reduced") setReduced(false); else setHidden(false);
+    expect(playing()).toHaveLength(2);
+  });
+
+  it.each(["reduced", "hidden"] as const)("keeps a held scene stopped through %s motion, and still stopped once it lifts", (reason) => {
+    render(<ProjectMotionProvider>
+      <MotionScene kind="probe"><TakeOverProbe label="probe" /><span>probe art</span></MotionScene>
+    </ProjectMotionProvider>);
     visibility([1]);
+    expect(playing()).toHaveLength(1);
 
-    for (let cycle = 0; cycle < 3; cycle += 1) {
-      expectPlaying("Dor art");
-      await advance(SCENE_DURATION - 1);
-      expectPlaying("Dor art");
-      await advance(1);
-      expect(playing()).toHaveLength(0);
-      expect(vi.getTimerCount()).toBe(1);
-      await advance(SCENE_REST - 1);
-      expect(playing()).toHaveLength(0);
-      await advance(1);
-    }
-    expectPlaying("Dor art");
+    fireEvent.click(screen.getByText("take over probe"));
+    expect(playing()).toHaveLength(0);
+
+    if (reason === "reduced") setReduced(true); else setHidden(true);
+    expect(playing()).toHaveLength(0);
+    if (reason === "reduced") setReduced(false); else setHidden(false);
+    // The hold outlives the suppression — lifting it does not hand the scene back.
+    expect(playing()).toHaveLength(0);
   });
 
-  it("plays every visible scene once, most visible first, before resting across three cycles", async () => {
-    mountScenes();
-    visibility([0.6, 0.9]);
+  it("stops exactly the taken-over scene, leaves its sibling playing, and never plays it again", () => {
+    render(<ProjectMotionProvider>
+      <MotionScene kind="probe"><TakeOverProbe label="probe" /><span>probe art</span></MotionScene>
+      <MotionScene kind="other"><span>other art</span></MotionScene>
+    </ProjectMotionProvider>);
+    visibility([1, 1]);
+    expect(playing()).toHaveLength(2);
 
-    for (let cycle = 0; cycle < 3; cycle += 1) {
-      expectPlaying("Transformer art");
-      await advance(SCENE_DURATION - 1);
-      expectPlaying("Transformer art");
-      await advance(1);
-      expectPlaying("Dor art");
-      await advance(SCENE_DURATION - 1);
-      expectPlaying("Dor art");
-      await advance(1);
-      expect(playing()).toHaveLength(0);
-      expect(vi.getTimerCount()).toBe(1);
-      await advance(SCENE_REST - 1);
-      expect(playing()).toHaveLength(0);
-      await advance(1);
-    }
-    expectPlaying("Transformer art");
-  });
+    fireEvent.click(screen.getByText("take over probe"));
+    expect(playing()).toHaveLength(1);
+    expect(playing()[0].textContent).toContain("other art");
 
-  it("uses current visibility order for each new round without replaying a scene within a round", async () => {
-    mountScenes();
-    visibility([0.6, 0.9]);
-    expectPlaying("Transformer art");
-    visibility([1, 0.5]);
-    expectPlaying("Transformer art");
-    await advance(SCENE_DURATION);
-    expectPlaying("Dor art");
-    await advance(SCENE_DURATION);
-    expect(playing()).toHaveLength(0);
-    await advance(SCENE_REST);
-    expectPlaying("Dor art");
-    await advance(SCENE_DURATION);
-    expectPlaying("Transformer art");
-  });
-
-  it("starts at exactly 50% visibility and leaves no active or rest timer when all scenes leave view", async () => {
-    mountScenes();
-    expect(vi.getTimerCount()).toBe(0);
-    visibility([0.49, 0]);
-    await advance((SCENE_DURATION + SCENE_REST) * 4);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    visibility([0.5, 0]);
-    expectPlaying("Dor art");
-    visibility([0.49, 0]);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    await advance((SCENE_DURATION + SCENE_REST) * 4);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-  });
-
-  it("loops only the eligible scene while its sibling remains offscreen", async () => {
-    mountScenes();
-    visibility([0.8, 0.49]);
-    for (let cycle = 0; cycle < 3; cycle += 1) {
-      expectPlaying("Dor art");
-      await advance(SCENE_DURATION);
-      expect(playing()).toHaveLength(0);
-      await advance(SCENE_REST);
-    }
-    expectPlaying("Dor art");
-  });
-
-  it("resets played flags only for visible scenes when starting a new round", async () => {
-    mountScenes();
-    visibility([1, 0.6]);
-    await advance(SCENE_DURATION);
-    expectPlaying("Transformer art");
-    visibility([0, 1]);
-    await advance(SCENE_DURATION);
-    await advance(SCENE_REST);
-    expectPlaying("Transformer art");
-
-    // Dor already played before leaving view; offscreen rounds must preserve that flag.
-    visibility([1, 0.6]);
-    expectPlaying("Transformer art");
-    await advance(SCENE_DURATION);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(1);
-    await advance(SCENE_REST - 1);
-    expect(playing()).toHaveLength(0);
-    await advance(1);
-    expectPlaying("Dor art");
-  });
-
-  it("cancels rest when no scenes remain visible and starts fresh work when a scene enters view", async () => {
-    mountScenes();
-    visibility([1, 0]);
-    await advance(SCENE_DURATION);
-    await advance(SCENE_REST / 2);
-    expect(vi.getTimerCount()).toBe(1);
+    // No amount of visibility churn brings a held scene back — the choice is permanent.
     visibility([0, 0]);
-    expect(vi.getTimerCount()).toBe(0);
-    await advance((SCENE_DURATION + SCENE_REST) * 3);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    visibility([0, 0.5]);
-    expectPlaying("Transformer art");
+    visibility([1, 1]);
+    visibility([0.5, 1]);
+    visibility([1, 1]);
+    expect(playing()).toHaveLength(1);
+    expect(playing()[0].textContent).toContain("other art");
   });
 
-  it("interrupts rest immediately for a newly visible, unplayed scene", async () => {
-    mountScenes();
-    visibility([1, 0]);
-    await advance(SCENE_DURATION);
-    await advance(SCENE_REST / 2);
-    visibility([1, 0.5]);
-    expectPlaying("Transformer art");
-    await advance(SCENE_REST / 2);
-    expectPlaying("Transformer art");
-    await advance(SCENE_DURATION - SCENE_REST / 2);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(1);
-  });
-
-  it("gives explicit replay priority over another scene waiting in the queue", async () => {
-    mountScenes();
-    visibility([1, 0.6]);
-    expectPlaying("Dor art");
-    fireEvent.click(screen.getByRole("button", { name: "Pause illustrations" }));
-    expect(playing()).toHaveLength(0);
-    fireEvent.click(screen.getByRole("button", { name: "Replay transformer attention illustration" }));
-    expectPlaying("Transformer art");
-    await advance(SCENE_DURATION);
-    expectPlaying("Dor art");
-  });
-
-  it("interrupts an active scene for an explicit replay without concurrent playback or stale completion", async () => {
-    mountScenes();
-    visibility([1, 0.6]);
-    await advance(SCENE_DURATION / 2);
-    fireEvent.click(screen.getByRole("button", { name: "Replay transformer attention illustration" }));
-    expectPlaying("Transformer art");
-    await advance(SCENE_DURATION - 1);
-    expectPlaying("Transformer art");
-    await advance(1);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(1);
-  });
-
-  it("interrupts rest for an explicit replay and cancels the old rest deadline", async () => {
-    mountScenes();
-    visibility([1, 0.6]);
-    await advance(SCENE_DURATION);
-    await advance(SCENE_DURATION);
-    expect(playing()).toHaveLength(0);
-    await advance(SCENE_REST / 2);
-    fireEvent.click(screen.getByRole("button", { name: "Replay transformer attention illustration" }));
-    expectPlaying("Transformer art");
-    await advance(SCENE_REST / 2);
-    expectPlaying("Transformer art");
-    await advance(SCENE_DURATION - SCENE_REST / 2 - 1);
-    expectPlaying("Transformer art");
-    await advance(1);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(1);
-    await advance(SCENE_REST);
-    expectPlaying("Dor art");
-  });
-
-  it("keeps explicit replay of an offscreen scene idle without scheduling timers", async () => {
-    mountScenes();
-    visibility([0, 0]);
-    fireEvent.click(screen.getByRole("button", { name: "Replay dor globe illustration" }));
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    await advance((SCENE_DURATION + SCENE_REST) * 3);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-  });
-
-  it.each(["pause", "reduced", "hidden"] as const)("cancels active playback on %s and resumes the interrupted scene for its full duration", async (reason) => {
-    mountScenes();
-    visibility([0.6, 1]);
-    await advance(SCENE_DURATION / 2);
-    if (reason === "pause") fireEvent.click(screen.getByRole("button", { name: "Pause illustrations" }));
-    if (reason === "reduced") setReduced(true);
-    if (reason === "hidden") setHidden(true);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    if (reason === "pause") expect(screen.getByRole("button", { name: "Resume illustrations" }).getAttribute("aria-pressed")).toBe("true");
-    await advance((SCENE_DURATION + SCENE_REST) * 3);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-
-    // The interrupted scene keeps priority even when its sibling becomes more visible.
-    visibility([1, 0.5]);
-    if (reason === "pause") fireEvent.click(screen.getByRole("button", { name: "Resume illustrations" }));
-    if (reason === "reduced") setReduced(false);
-    if (reason === "hidden") setHidden(false);
-    expectPlaying("Transformer art");
-    await advance(SCENE_DURATION - 1);
-    expectPlaying("Transformer art");
-    await advance(1);
-    expectPlaying("Dor art");
-  });
-
-  it.each(["pause", "reduced", "hidden"] as const)("cancels rest on %s and starts a full new rest interval when motion resumes", async (reason) => {
-    mountScenes(1);
-    visibility([1]);
-    await advance(SCENE_DURATION);
-    await advance(SCENE_REST / 2);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(1);
-    if (reason === "pause") fireEvent.click(screen.getByRole("button", { name: "Pause illustrations" }));
-    if (reason === "reduced") setReduced(true);
-    if (reason === "hidden") setHidden(true);
-    expect(vi.getTimerCount()).toBe(0);
-    await advance((SCENE_DURATION + SCENE_REST) * 3);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    if (reason === "pause") fireEvent.click(screen.getByRole("button", { name: "Resume illustrations" }));
-    if (reason === "reduced") setReduced(false);
-    if (reason === "hidden") setHidden(false);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(1);
-    await advance(SCENE_REST - 1);
-    expect(playing()).toHaveLength(0);
-    await advance(1);
-    expectPlaying("Dor art");
-  });
-
-  it.each([false, true])("registers a fresh scene when a reused slot changes kind (prior scene completed: %s)", async (completeFirst) => {
+  it("resets a reused slot's hold when its kind changes, so it plays again", () => {
     const scene = (kind: string) => <ProjectMotionProvider>
-      <MotionControls />
-      <MotionScene kind={kind}><span>{kind}</span></MotionScene>
+      <MotionScene kind={kind}><TakeOverProbe label="x" /><span>{kind}</span></MotionScene>
     </ProjectMotionProvider>;
     const view = render(scene("dor-globe"));
     visibility([1]);
-    const slot = screen.getByText("dor-globe").closest(".motion-scene");
-    expectPlaying("dor-globe");
-    if (completeFirst) {
-      await advance(SCENE_DURATION);
-      expect(playing()).toHaveLength(0);
-      expect(vi.getTimerCount()).toBe(1);
-      await advance(SCENE_REST / 2);
-    }
+    fireEvent.click(screen.getByText("take over x"));
+    expect(playing()).toHaveLength(0);
 
     view.rerender(scene("transformer-attention"));
-    expect(screen.getByText("transformer-attention").closest(".motion-scene")).toBe(slot);
-    expect(observers).toHaveLength(2);
-    expect(observers[0].disconnect).toHaveBeenCalledOnce();
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    visibility([0, 1]);
-    expectPlaying("transformer-attention");
-    await advance(SCENE_DURATION - 1);
-    expectPlaying("transformer-attention");
-    await advance(1);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(1);
-    await advance(SCENE_REST);
-    expectPlaying("transformer-attention");
+    expect(playing()).toHaveLength(1);
+    expect(playing()[0].textContent).toContain("transformer-attention");
   });
 
-  it("renders still illustrations and disables replay when reduced motion is already enabled", async () => {
-    reduced = true;
-    mountScenes();
+  it("schedules no timers at mount, on visibility changes, under suppression, or on take-over", () => {
+    render(<ProjectMotionProvider>
+      <MotionScene kind="probe"><TakeOverProbe label="probe" /><span>probe art</span></MotionScene>
+      <MotionScene kind="other"><span>other art</span></MotionScene>
+    </ProjectMotionProvider>);
+    expect(vi.getTimerCount()).toBe(0);
     visibility([1, 1]);
-    expect(playing()).toHaveLength(0);
     expect(vi.getTimerCount()).toBe(0);
-    expect((screen.getByRole("button", { name: "Reduced motion is on" }) as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getAllByText("Still illustration")).toHaveLength(2);
-    for (const button of screen.getAllByRole("button", { name: /Replay/ })) {
-      expect((button as HTMLButtonElement).disabled).toBe(true);
-      fireEvent.click(button);
-    }
-    await advance((SCENE_DURATION + SCENE_REST) * 3);
-    expect(playing()).toHaveLength(0);
+    fireEvent.click(screen.getByText("take over probe"));
+    expect(vi.getTimerCount()).toBe(0);
+    setReduced(true);
+    expect(vi.getTimerCount()).toBe(0);
+    setHidden(true);
+    expect(vi.getTimerCount()).toBe(0);
+    visibility([0, 0]);
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it.each([false, true])("disconnects observers, listeners and timers on unmount (during rest: %s)", async (duringRest) => {
+  it.each([false, true])("disconnects the observer and removes both listeners on unmount (visible: %s)", (visible) => {
     const removeVisibilityListener = vi.spyOn(document, "removeEventListener");
     const view = mountScenes(1);
-    visibility([1]);
-    if (duringRest) await advance(SCENE_DURATION);
-    expect(vi.getTimerCount()).toBe(1);
+    if (visible) visibility([1]);
     view.unmount();
-    expect(vi.getTimerCount()).toBe(0);
     expect(observers).toHaveLength(1);
     observers.forEach((observer) => expect(observer.disconnect).toHaveBeenCalledOnce());
     expect(removePreferenceListener).toHaveBeenCalledWith("change", expect.any(Function));
     expect(removeVisibilityListener).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
-    await advance((SCENE_DURATION + SCENE_REST) * 3);
-    expect(vi.getTimerCount()).toBe(0);
   });
 
-  it.each(["reduced", "hidden"] as const)("clears a held scene's hold unconditionally on reset, so it plays once %s motion is lifted", async (reason) => {
-    render(<ProjectMotionProvider>
-      <MotionControls />
-      <MotionScene kind="probe"><TakeOverChild /><span>probe art</span></MotionScene>
-    </ProjectMotionProvider>);
-    visibility([1]);
-    expectPlaying("probe art");
-
-    fireEvent.click(screen.getByText("take over"));
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-
-    if (reason === "reduced") setReduced(true); else setHidden(true);
-    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
-    expect(playing()).toHaveLength(0);
-
-    if (reason === "reduced") setReduced(false); else setHidden(false);
-    expectPlaying("probe art");
-  });
-
-  it.each(["reduced", "hidden"] as const)("does not clear the user's pause preference when resetting a held scene while %s motion suppresses it", async (reason) => {
-    render(<ProjectMotionProvider>
-      <MotionControls />
-      <MotionScene kind="probe"><TakeOverChild /><span>probe art</span></MotionScene>
-    </ProjectMotionProvider>);
-    visibility([1]);
-    fireEvent.click(screen.getByText("take over"));
-    fireEvent.click(screen.getByRole("button", { name: "Pause illustrations" }));
-    const control = document.querySelector(".motion-control")!;
-    expect(control.getAttribute("aria-pressed")).toBe("true");
-
-    if (reason === "reduced") setReduced(true); else setHidden(true);
-    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
-    expect(control.getAttribute("aria-pressed")).toBe("true");
-
-    if (reason === "reduced") setReduced(false); else setHidden(false);
-    // The pause preference, left untouched by the bailed replay, still holds the scene back.
-    expect(playing()).toHaveLength(0);
-    fireEvent.click(control);
-    expectPlaying("probe art");
-  });
-
-  it.each(["reduced", "hidden"] as const)("does not disturb a sibling scene queued to resume when a held scene is reset while %s motion is active", async (reason) => {
-    render(<ProjectMotionProvider>
-      <MotionControls />
-      <MotionScene kind="probe"><TakeOverChild /><span>probe art</span></MotionScene>
-      <MotionScene kind="other"><span>other art</span></MotionScene>
-    </ProjectMotionProvider>);
+  it("renders no pause control and no per-scene replay button", () => {
+    mountScenes();
     visibility([1, 1]);
-    expectPlaying("probe art");
-    await advance(SCENE_DURATION);
-    expectPlaying("other art");
-    await advance(SCENE_DURATION / 2);
-
-    if (reason === "reduced") setReduced(true); else setHidden(true);
-    expect(playing()).toHaveLength(0);
-
-    fireEvent.click(screen.getByText("take over"));
-    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
-
-    if (reason === "reduced") setReduced(false); else setHidden(false);
-    // "other" was the one interrupted mid-playback; resetting the unrelated held scene
-    // must not have disturbed its queued resume priority or stolen its remaining time.
-    expectPlaying("other art");
-    await advance(SCENE_DURATION - 1);
-    expectPlaying("other art");
-  });
-
-  it.each([false, true])("clears a reused slot's driven state when its kind changes, even under reduced motion (reduced: %s)", (isReduced) => {
-    if (isReduced) reduced = true;
-    const scene = (kind: string) => <ProjectMotionProvider>
-      <MotionControls />
-      <MotionScene kind={kind}><TakeOverChild /><span>{kind}</span></MotionScene>
-    </ProjectMotionProvider>;
-    const view = render(scene("dor-globe"));
-    fireEvent.click(screen.getByText("take over"));
-    expect(screen.getByRole("button", { name: "Reset the dor globe illustration" })).toBeTruthy();
-
-    view.rerender(scene("transformer-attention"));
-    const slot = screen.getByText("transformer-attention").closest(".motion-scene")!;
-    expect(slot.getAttribute("data-driven")).toBe("false");
-    expect(screen.getByRole("button", { name: "Replay transformer attention illustration" })).toBeTruthy();
-  });
-
-  it("lets a reset scene play again once the observer reports full visibility, even after being taken over while offscreen", async () => {
-    render(<ProjectMotionProvider>
-      <MotionControls />
-      <MotionScene kind="probe"><TakeOverChild /><span>probe art</span></MotionScene>
-    </ProjectMotionProvider>);
-    visibility([1]);
-    expectPlaying("probe art");
-
-    fireEvent.click(screen.getByText("take over"));
-    expect(playing()).toHaveLength(0);
-
-    visibility([0]);
-    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-
-    visibility([1]);
-    expectPlaying("probe art");
-  });
-
-  it("still drops a genuinely identical repeat observation without creating extra timer churn", () => {
-    mountScenes(1);
-    visibility([1]);
-    expectPlaying("Dor art");
-
-    visibility([1]);
-    expectPlaying("Dor art");
+    expect(document.querySelector(".motion-control")).toBeNull();
+    expect(document.querySelector(".scene-replay")).toBeNull();
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 });

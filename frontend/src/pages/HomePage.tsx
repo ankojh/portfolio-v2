@@ -4,7 +4,6 @@ import { WorthBuilding } from "@/components/WorthBuilding";
 import { AskAnkit } from "@/components/AskAnkit";
 import { AoLogo, EvidenceBadge, JaliBand, PrintFlower } from "@/components/site/Brand";
 import { Link } from "@/components/site/Link";
-import { MotionControls } from "@/components/visuals/ProjectMotion";
 import { VisualPanel } from "@/components/visuals/ProductVisuals";
 import { about, education, experience, featuredCase, projects } from "@/content/site";
 import { workCases } from "@/content/caseStudies";
@@ -38,7 +37,7 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
 
       <section id="work" className="page-width work-section" aria-label="Selected work">
         <div className="section-index"><span>01 / Decisions, shipped</span><span>Problem → choice → evidence</span></div>
-        <div className="motion-toolbar"><span>Product scenes · looping gently, one at a time · some you can try</span><MotionControls /></div>
+        <div className="motion-toolbar"><span>Product scenes · looping gently · some you can try</span></div>
         <article id="valuation" className="valuation-feature">
           <div className="valuation-overview">
             <div className="feature-meta"><span>Pulley / Valuation platform</span><span><Check size={13} aria-hidden="true" /> Shipped</span></div>
@@ -90,7 +89,7 @@ export function HomePage({ onError }: { onError: (message: string) => void }) {
         <div className="page-width">
           <div className="section-index"><span>02 / The side of my desk</span><span>Questions turned into prototypes</span></div>
           <div className="section-title-row"><PrintFlower className="desk-flower" /><div><h2 id="projects-heading">I think better when I can try it.</h2><p>These are my small bets on how people could work with AI.</p></div><Link to="/projects" className="text-link">All projects <ArrowUpRight size={17} aria-hidden="true" /></Link></div>
-          <div className="motion-toolbar"><span>Illustrative product stories · looping gently · some you can try</span><MotionControls /></div>
+          <div className="motion-toolbar"><span>Illustrative product stories · looping gently · some you can try</span></div>
           <article className="desk-lead">
             <div className="desk-lead-visual"><VisualPanel visual={leadProject.homeVisual} /></div>
             <div className="desk-lead-copy">

@@ -2,8 +2,8 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
-import { MotionScene, ProjectMotionProvider, SCENE_DURATION, SCENE_REST } from "./ProjectMotion";
-import { useSceneChoice, useSceneControl } from "./sceneControl";
+import { MotionScene, ProjectMotionProvider } from "./ProjectMotion";
+import { useSceneChoice } from "./sceneControl";
 import { HeadsDownDemo } from "./HeadsDownDemo";
 import { DorGlobe, TransformerAttention } from "./NewProjectVisuals";
 import { WorkIllustration } from "./WorkIllustrations";
@@ -14,17 +14,7 @@ let observers: Observer[];
 let reduced: boolean;
 let preferenceListeners: Set<() => void>;
 
-/** A minimal scene body that exposes the raw `takeOver`/`playing` contract for scheduler tests. */
-function TakeOverProbe({ label }: { label: string }) {
-  const { playing, takeOver } = useSceneControl();
-  return <div>
-    <span>{label}</span>
-    <span data-testid={`${label}-scene-playing`}>{String(playing)}</span>
-    <button onClick={takeOver}>{`take over ${label}`}</button>
-  </div>;
-}
-
-/** Exposes `useSceneChoice`'s value/touched state so the reset-on-replay contract is observable. */
+/** Exposes `useSceneChoice`'s value/touched state so a choice suspending autoplay is observable. */
 function ChoiceProbe({ label, initial }: { label: string; initial: string }) {
   const { value, touched, choose } = useSceneChoice(initial);
   return <div>
@@ -33,12 +23,6 @@ function ChoiceProbe({ label, initial }: { label: string; initial: string }) {
     <span data-testid={`${label}-touched`}>{String(touched)}</span>
     <button onClick={() => choose(`${initial}-chosen`)}>{`choose in ${label}`}</button>
   </div>;
-}
-
-function mountProbes(labels: string[]) {
-  return render(<ProjectMotionProvider>
-    {labels.map((label) => <MotionScene key={label} kind={label}><TakeOverProbe label={label} /></MotionScene>)}
-  </ProjectMotionProvider>);
 }
 
 function visibility(ratios: number[]) {
@@ -56,10 +40,6 @@ function playing() {
 function expectPlaying(label: string) {
   expect(playing()).toHaveLength(1);
   expect(playing()[0].textContent).toContain(label);
-}
-
-async function advance(time: number) {
-  await act(async () => { await vi.advanceTimersByTimeAsync(time); });
 }
 
 beforeEach(() => {
@@ -85,111 +65,11 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
-describe("scene scheduler: hold and release", () => {
-  it("removes a scene from rotation the instant it is taken over, and the rotation advances to the next scene", async () => {
-    mountProbes(["a", "b"]);
-    visibility([1, 1]);
-    expectPlaying("a");
-
-    fireEvent.click(screen.getByText("take over a"));
-    expect(screen.getByTestId("a-scene-playing").textContent).toBe("false");
-    expectPlaying("b");
-  });
-
-  it("never brings a held scene back into the rotation across later rounds", async () => {
-    mountProbes(["a", "b"]);
-    visibility([1, 1]);
-    expectPlaying("a");
-    fireEvent.click(screen.getByText("take over a"));
-    expectPlaying("b");
-
-    for (let round = 0; round < 3; round += 1) {
-      await advance(SCENE_DURATION);
-      expect(playing()).toHaveLength(0);
-      await advance(SCENE_REST);
-      expectPlaying("b");
-    }
-  });
-
-  it("leaves no rest timer running once every visible scene is held", async () => {
-    mountProbes(["a", "b"]);
-    visibility([1, 1]);
-    fireEvent.click(screen.getByText("take over a"));
-    fireEvent.click(screen.getByText("take over b"));
-
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    await advance((SCENE_DURATION + SCENE_REST) * 3);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-  });
-
-  it("keeps the scheduler running normally for the remaining scene when only one of several is held", async () => {
-    mountProbes(["a", "b", "c"]);
-    visibility([1, 1, 1]);
-    fireEvent.click(screen.getByText("take over a"));
-    fireEvent.click(screen.getByText("take over b"));
-    expectPlaying("c");
-
-    for (let round = 0; round < 3; round += 1) {
-      await advance(SCENE_DURATION);
-      expect(playing()).toHaveLength(0);
-      expect(vi.getTimerCount()).toBe(1);
-      await advance(SCENE_REST);
-      expectPlaying("c");
-    }
-  });
-
-  it("clears the active scene immediately when it is held mid-playback, and does not let it resurface when the next automatic round starts", async () => {
-    mountProbes(["a", "b"]);
-    visibility([1, 0.6]);
-    expectPlaying("a");
-    await advance(SCENE_DURATION / 2);
-
-    fireEvent.click(screen.getByText("take over a"));
-    expect(screen.getByTestId("a-scene-playing").textContent).toBe("false");
-    expectPlaying("b");
-
-    await advance(SCENE_DURATION);
-    expect(playing()).toHaveLength(0);
-    await advance(SCENE_REST);
-    expectPlaying("b");
-  });
-
-  it("hands a held scene back to the rotation and resets it when its Replay/Reset control fires", async () => {
-    mountProbes(["a", "b"]);
-    visibility([1, 1]);
-    expectPlaying("a");
-    fireEvent.click(screen.getByText("take over a"));
-    expectPlaying("b");
-
-    fireEvent.click(screen.getByRole("button", { name: "Reset the a illustration" }));
-    expectPlaying("a");
-    expect(screen.getByTestId("a-scene-playing").textContent).toBe("true");
-  });
-
-  it("does not spin a stray active or rest timer while a scene is held and its sibling is offscreen", async () => {
-    mountProbes(["a", "b"]);
-    visibility([1, 0]);
-    expectPlaying("a");
-    fireEvent.click(screen.getByText("take over a"));
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-    await advance((SCENE_DURATION + SCENE_REST) * 3);
-    expect(playing()).toHaveLength(0);
-    expect(vi.getTimerCount()).toBe(0);
-  });
-});
-
-describe("useSceneChoice reset contract", () => {
-  function mountChoiceProbe() {
-    return render(<ProjectMotionProvider>
+describe("useSceneChoice", () => {
+  it("marks a choice as touched and suspends autoplay for that scene, permanently", () => {
+    render(<ProjectMotionProvider>
       <MotionScene kind="probe"><ChoiceProbe label="probe" initial="start" /></MotionScene>
     </ProjectMotionProvider>);
-  }
-
-  it("marks a choice as touched and suspends autoplay for that scene", async () => {
-    mountChoiceProbe();
     visibility([1]);
     expectPlaying("probe");
     expect(screen.getByTestId("probe-value").textContent).toBe("start");
@@ -199,18 +79,12 @@ describe("useSceneChoice reset contract", () => {
     expect(screen.getByTestId("probe-value").textContent).toBe("start-chosen");
     expect(screen.getByTestId("probe-touched").textContent).toBe("true");
     expect(playing()).toHaveLength(0);
-  });
 
-  it("restores the initial value and clears touched once the scene is replayed and resumes playing", async () => {
-    mountChoiceProbe();
+    // There is no reset: the choice and the suspension both stay, however visibility churns.
+    visibility([0]);
     visibility([1]);
-    fireEvent.click(screen.getByText("choose in probe"));
-    expect(screen.getByTestId("probe-touched").textContent).toBe("true");
-
-    fireEvent.click(screen.getByRole("button", { name: "Reset the probe illustration" }));
-    expect(screen.getByTestId("probe-value").textContent).toBe("start");
-    expect(screen.getByTestId("probe-touched").textContent).toBe("false");
-    expectPlaying("probe");
+    expect(playing()).toHaveLength(0);
+    expect(screen.getByTestId("probe-value").textContent).toBe("start-chosen");
   });
 });
 
@@ -255,7 +129,7 @@ describe("HeadsDownDemo", () => {
     expect(screen.getAllByRole("button")).toHaveLength(3);
   });
 
-  it("suspends autoplay for the scene it lives in once an option is chosen", () => {
+  it("suspends autoplay for the scene it lives in once an option is chosen, permanently", () => {
     render(<ProjectMotionProvider>
       <MotionScene kind="heads-down"><HeadsDownDemo /></MotionScene>
     </ProjectMotionProvider>);
@@ -263,8 +137,11 @@ describe("HeadsDownDemo", () => {
     expect(document.querySelector(".motion-scene--heads-down")!.getAttribute("data-playing")).toBe("true");
 
     fireEvent.click(screen.getByRole("button", { name: "Strict" }));
-    expect(playing()).toHaveLength(0);
-    expect(screen.getByRole("button", { name: "Reset the heads down illustration" })).toBeTruthy();
+    expect(document.querySelector(".motion-scene--heads-down")!.getAttribute("data-playing")).toBe("false");
+
+    visibility([0]);
+    visibility([1]);
+    expect(document.querySelector(".motion-scene--heads-down")!.getAttribute("data-playing")).toBe("false");
   });
 });
 

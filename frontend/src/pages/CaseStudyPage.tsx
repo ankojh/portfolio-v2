@@ -1,7 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 
 import { Link } from "@/components/site/Link";
-import { MotionControls } from "@/components/visuals/ProjectMotion";
 import { VisualPanel } from "@/components/visuals/ProductVisuals";
 import type { CaseStudy } from "@/content/caseStudies";
 
@@ -16,7 +15,7 @@ export function CaseStudyPage({ study }: { study: CaseStudy }) {
       </header>
       <div className="case-opening">
         <div className="case-framing"><span className="section-kicker">The question worth asking</span><blockquote>{study.question}</blockquote><div className="case-ownership"><span className="section-kicker">My contribution</span><p>{study.role}</p></div></div>
-        <figure><div className="case-visual"><VisualPanel visual={study.visual} /></div><figcaption className="visual-caption case-visual-caption"><span>{study.caption}</span><MotionControls /></figcaption></figure>
+        <figure><div className="case-visual"><VisualPanel visual={study.visual} /></div><figcaption className="visual-caption case-visual-caption"><span>{study.caption}</span></figcaption></figure>
       </div>
       <section className="case-decisions" aria-labelledby="decisions-heading">
         <div className="section-index"><span>01 / Decisions & tradeoffs</span></div>

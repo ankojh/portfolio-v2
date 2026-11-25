@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { EvidenceBadge, Eyebrow } from "@/components/site/Brand";
 import { Link } from "@/components/site/Link";
 import { VisualPanel } from "@/components/visuals/ProductVisuals";
-import { MotionControls } from "@/components/visuals/ProjectMotion";
 
 /* Sources: heads-down/README.md and heads-down/bench/FINDINGS.md. */
 
@@ -186,7 +185,6 @@ export function HeadsDownCaseStudy() {
         <figcaption className="mt-3.5 text-[13px] leading-normal text-quiet">
           Illustrative composite. The lecture stays visible because it matches the task; the recommendations beside it are blurred. Tabs and the address bar always stay visible, as do controls the app exposes to accessibility. Set how much it hides to compare the three cutoffs.
         </figcaption>
-        <div className="mt-3"><MotionControls /></div>
       </figure>
 
       <div className="mt-14 sm:mt-[72px]">

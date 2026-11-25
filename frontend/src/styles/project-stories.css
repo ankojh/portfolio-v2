@@ -192,3 +192,19 @@
  .heads-recommendation{min-height:14px}.heads-recommendation > i{width:18px;height:14px}
  .heads-lesson > strong{font-size:7.5px}.heads-borderline{font-size:7.5px}.heads-controls{gap:2px 6px}
 }
+
+/* Scenes loop for as long as they are on screen. These keyframes were written as
+   one-shot narratives that end somewhere other than where they began, so each pass
+   alternates and plays itself back rather than cutting to the start. Last in the last
+   stylesheet, because the `animation` shorthand above resets both of these. */
+.motion-scene[data-playing="true"] *,
+.motion-scene[data-playing="true"] *::before,
+.motion-scene[data-playing="true"] *::after { animation-iteration-count:infinite; animation-direction:alternate; }
+.motion-scene[data-playing="true"] .hush-wave i:nth-child(even) { animation-direction:alternate-reverse; }
+/* Motion gives way to attention. With no pause button, a scene under the pointer or
+   holding keyboard focus is how a reader stops it — and how a screen-reader user does,
+   since moving through the controls inside a scene settles it. */
+@media (hover:hover) {
+  .motion-scene:hover *,.motion-scene:hover *::before,.motion-scene:hover *::after { animation-play-state:paused; }
+}
+.motion-scene:focus-within *,.motion-scene:focus-within *::before,.motion-scene:focus-within *::after { animation-play-state:paused; }
